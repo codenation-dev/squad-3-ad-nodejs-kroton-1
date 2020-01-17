@@ -1,6 +1,6 @@
 import express from 'express';
 // Importa as rotas do arquivo "routes.js". Assim o método "routes" da classe "App" pode usar a variável "server"
-//  do método "constructor" que recebeu o Express,.
+//  do método "constructor", que recebeu o Express, para criar as rotas.
 import routes from './routes';
 
 class App {
