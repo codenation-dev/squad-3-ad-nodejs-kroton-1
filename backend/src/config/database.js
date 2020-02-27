@@ -3,6 +3,6 @@ module.exports = {
   host: 'localhost',
   username: 'root',
   password: '1234',
-  database: 'teste', 
+  database: 'centralErros', 
   storage: '../database/database.sqlite'
 };
