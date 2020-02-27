@@ -38,7 +38,7 @@ git pull
 Tendo em vista que seu repositório local está atualizado com o repositório remoto, agora você poderá criar uma branch separada a **partir da branch develop** com o nome feature. Essa branch você irá trabalhar em uma feature em específico para depois dar pull request na branch develop. Assim, crie a branch da feature com o seguinte comando:
 
 ```
-git branch -b feature/nome-da-feature
+git checkout -b feature/nome-da-feature
 ```
 
 Agora, você deve trabalhar na feature fazendo os commits normalmente. **(nao esqueça dos commits!)**
