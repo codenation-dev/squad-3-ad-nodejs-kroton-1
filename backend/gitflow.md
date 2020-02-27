@@ -97,4 +97,4 @@ Após ter feito o pull request, você deve enviar uma mensagem no grupo do whats
 
 ## Fazendo o Merge
 
-Entrar no pull request e clicar no botão "Merge pull request" e depois "Confirm merge"
+Entrar no pull request e clicar no botão "Merge pull request" e depois "Confirm merge"git 
