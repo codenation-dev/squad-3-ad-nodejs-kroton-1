@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const sequelizeConfig = require('../settings/database');
+const sequelizeConfig = require('../config/database');
 
 const User = sequelizeConfig.define('User', {
   id: {
@@ -14,4 +14,4 @@ const User = sequelizeConfig.define('User', {
   password_hash: Sequelize.STRING
 });
 
-module.exports = User;
+module.exports = { User };

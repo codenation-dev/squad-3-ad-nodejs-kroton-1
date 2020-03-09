@@ -1,7 +1,7 @@
 const { User } = require('../models/User');
-const { Log } = require('../models/Log');
+//const { Log } = require('../models/Log');
 
-const models = [User, Log];
+const models = [User, /* Log */];
 
 for(let i = 0; i < models.length; i++) {
   models[i].sync({ alter: true })
