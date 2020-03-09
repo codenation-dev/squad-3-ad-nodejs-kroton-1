@@ -1,5 +1,8 @@
-const { User } = require('../models/User');
-//const { Log } = require('../models/Log');
+const path = require('path')
+const modelUser = path.resolve('src/models/User')
+const modelLog = path.resolve('src/models/Log')
+const { User } = require(modelUser);
+const { Log } = require(modelLog);
 
 const models = [User, /* Log */];
 
