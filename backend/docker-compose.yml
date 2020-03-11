@@ -9,4 +9,4 @@ services:
       - ./db/:/docker-entrypoint-initdb.d/
     environment:
       MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: centralerros_development
+      MYSQL_DATABASE: centralerros
