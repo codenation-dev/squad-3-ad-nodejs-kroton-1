@@ -1,6 +1,6 @@
 const path = require('path')
 const Sequelize = require('sequelize');
-const pathFileTest =  path.resolve('.env.test')
+const pathFileTest =  path.resolve('../../.env.test')
 const pathFile =  path.resolve('.env')
 
 require('dotenv').config({ path: process.env.NODE_ENV === 'test' ? pathFileTest : pathFile});

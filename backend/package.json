@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/bin/server.js",
   "scripts": {
-    "start": "nodemon backend/src/bin/server.js"
+    "start": "nodemon"
   },
   "keywords": [],
   "author": "",

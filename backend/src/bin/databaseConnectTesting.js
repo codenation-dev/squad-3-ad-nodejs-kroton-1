@@ -1,6 +1,5 @@
-const path = require('path')
-const database = path.resolve('src/config/database.js')
-const sequelize = require(database);
+
+const sequelize = require('../config/database');
 
 sequelize
   .authenticate()

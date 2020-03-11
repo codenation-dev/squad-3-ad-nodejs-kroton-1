@@ -1,7 +1,5 @@
-const path = require('path')
-const databaseConfig = path.resolve('src/config/database')
 const Sequelize = require('sequelize');
-const sequelizeConfig = require(databaseConfig);
+const sequelizeConfig = require('../config/database');
 
 const User = sequelizeConfig.define('User', {
   id: {
