@@ -1,10 +1,7 @@
-const path = require('path')
-const usersRoutePath = path.resolve('src/routes/users')
-const logsRoutePath = path.resolve('src/routes/logs')
 const express = require('express');
 const router = express.Router();
-const usersRoute = require(usersRoutePath);
-const logsRoute = require(logsRoutePath);
+const usersRoute = require('./users');
+const logsRoute = require('./logs');
 
 router.get('/', (req, res) => {
     res.status(200).json({
