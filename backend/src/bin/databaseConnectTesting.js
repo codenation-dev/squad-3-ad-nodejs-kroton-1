@@ -1,5 +1,5 @@
-
-const sequelize = require('../config/database');
+require('module-alias/register')
+const sequelize = require('@config/database.js');
 
 sequelize
   .authenticate()
