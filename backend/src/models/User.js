@@ -1,5 +1,6 @@
+require('module-alias/register')
 const Sequelize = require('sequelize');
-const sequelizeConfig = require('../config/database');
+const sequelizeConfig = require('@config/database');
 
 const User = sequelizeConfig.define('User', {
   id: {
