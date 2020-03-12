@@ -19,12 +19,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
-  },
-  "_moduleAliases": {
-    "@": "src",
-    "@app": "src/app.js",
-    "@config": "src/config",
-    "@models": "src/models",
-    "@routes": "src/routes"
   }
 }
