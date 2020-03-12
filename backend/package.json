@@ -24,6 +24,7 @@
     "@": "src",
     "@app": "src/app.js",
     "@config": "src/config",
-    "@models": "src/models"
+    "@models": "src/models",
+    "@routes": "src/routes"
   }
 }
