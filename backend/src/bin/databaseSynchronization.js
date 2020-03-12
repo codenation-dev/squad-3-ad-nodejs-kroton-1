@@ -1,5 +1,5 @@
- 
-const { User } = require('../models/User');
+require('module-alias/register')
+const { User } = require('@models/User.js');
 //const { Log } = require('../models/Log');
 
 const models = [User, /* Log */];

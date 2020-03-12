@@ -23,6 +23,7 @@
   "_moduleAliases": {
     "@": "src",
     "@app": "src/app.js",
-    "@config": "src/config" 
+    "@config": "src/config",
+    "@models": "src/models"
   }
 }
