@@ -19,5 +19,9 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
+  },
+  "_moduleAliases": {
+    "@"      : "src",
+    "@app"  : "src/app.js"
   }
 }
