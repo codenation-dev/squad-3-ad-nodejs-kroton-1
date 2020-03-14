@@ -18,12 +18,6 @@ const Log = sequelizeConfig.define('Log', {
   send_date: {
     type: Sequelize.STRING,
     allowNull: false
-  },
-  status: {
-    type: Sequelize.ENUM,
-    values: ['active', 'pending', 'deleted'],
-    defaultValue: 'active',
-    allowNull: true
   }
 
 });
