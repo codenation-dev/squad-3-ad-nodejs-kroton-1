@@ -8,4 +8,6 @@ router.get('/logs/:id', controller.getAllLogsFromUser)
 
 router.post('/signup', controller.create)
 
+router.patch('/:id', controller.update)
+
 module.exports = router;

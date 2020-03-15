@@ -40,5 +40,21 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ error })
     }
+  },
+
+  update: async (req, res, next) => {
+    const { id } = req.params
+    const { body } = req
+    console.log(body)
+    try {
+      await User.update(
+        body, {
+        where: { id }
+      })
+
+      res.status(200).json({ message: 'user updated!' })
+    } catch (error) {
+      res.status(400).json({ error })
+    }
   }
 }
