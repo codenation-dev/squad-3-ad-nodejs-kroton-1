@@ -10,4 +10,6 @@ router.post('/signup', controller.create)
 
 router.patch('/:id', controller.update)
 
+router.delete('/:id', controller.deleteById)
+
 module.exports = router;

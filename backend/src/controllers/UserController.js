@@ -56,5 +56,18 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ error })
     }
+  },
+
+  deleteById: async (req, res, next) => {
+    const { id } = req.params
+    try {
+      await User.destroy({
+        where: { id }
+      })
+
+      res.status(200).json({ message: 'user deleted succesfully' })
+    } catch (error) {
+      res.status(400).json({ error })
+    }
   }
 }
