@@ -45,7 +45,6 @@ module.exports = {
   update: async (req, res, next) => {
     const { id } = req.params
     const { body } = req
-    console.log(body)
     try {
       await User.update(
         body, {
@@ -64,7 +63,6 @@ module.exports = {
       await User.destroy({
         where: { id }
       })
-
       res.status(200).json({ message: 'user deleted succesfully' })
     } catch (error) {
       res.status(400).json({ error })

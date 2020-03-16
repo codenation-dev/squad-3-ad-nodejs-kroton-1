@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/LogsController')
+const { authorize } = require('../middlewares/auth')
 
-router.get('/', controller.getAll)
+router.post('/', authorize, controller.create)
 
-router.get('/level/:level', controller.getByLevel)
+router.delete('/:id', authorize, controller.deleteById)
 
-router.get('/sender/:sender_application', controller.getBySender)
+router.get('/', authorize, controller.getAll)
 
-router.post('/', controller.create)
-
-router.delete('/:id', controller.deleteById)
+router.get('/level/:level', authorize, controller.getByLevel)
+ 
+router.get('/sender/:sender_application', authorize, controller.getBySender)
 
 module.exports = router;
