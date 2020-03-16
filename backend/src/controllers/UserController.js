@@ -81,20 +81,28 @@ module.exports = {
           email
         }
       });
-      
-      if(user.email === email && user.password === password) {
-        const token = await generateToken({
-          id: user.id
-        })
-        console.log(token)
-        res.status(200).json({
-          token
-        })
+
+      if(user) {
+        if(user.email === email && user.password === password) {
+          const token = await generateToken({
+            id: user.id
+          })
+          console.log(token)
+          res.status(200).json({
+            token
+          })
+        } else {
+          res.status(401).json({
+            message: 'User or password incorrect'
+          })
+        }
       } else {
-        res.status(401).json({
-          message: 'User or password incorrect'
+        res.status(400).json({
+          message: 'User not found'
         })
       }
+      
+      
 
     } catch (error) {
       res.status(400).json({ error })
