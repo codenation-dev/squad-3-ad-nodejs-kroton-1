@@ -9,12 +9,6 @@ module.exports = {
     return token;
   },
   decodeToken: (token) => {
-    jwt.verify(token, process.env.SECRET, (err, decoded) => {
-      if (err) {
-        res.status(401).json({ "error":'Invalid token'})
-      } else {
-        next()
-      }
-    })
+      return jwt.verify(token, process.env.SECRET)
   }
 }

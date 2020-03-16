@@ -1,5 +1,5 @@
 const { User } = require('../models')
-const {generateToken } = require('../services/auth')
+const { generateToken, decodeToken } = require('../services/auth')
 
 module.exports = {
 
@@ -36,10 +36,15 @@ module.exports = {
         }
     },
 
-/*     authorize: async (req, res, next) => {
+    authorize: async (req, res, next) => {
         try {
-            const token = 
+            const token = req.body.token || req.query.token || req.headers['x-access-token'];
+            const validatedToken = decodeToken(token)
+            if (validatedToken) {
+                next()
+            }
+        } catch (error) {
+            res.status(400).json({ error })
         }
-    } */
-
+    }
 }

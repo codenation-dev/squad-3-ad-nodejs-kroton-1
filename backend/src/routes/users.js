@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const controller = require('../controllers/UserController')
-const { authenticate } = require('../middlewares/auth');
+const { authenticate, authorize } = require('../middlewares/auth');
 
 router.get('/:id', controller.getById)
 
@@ -13,6 +13,6 @@ router.post('/signin', authenticate)
 
 router.patch('/:id', controller.update)
 
-router.delete('/:id', controller.deleteById)
+router.delete('/:id', authorize, controller.deleteById)
 
 module.exports = router;
