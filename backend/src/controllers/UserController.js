@@ -1,5 +1,6 @@
 const { User } = require('../models')
 const { Log } = require('../models')
+const { generateToken } = require('../services/auth');
 
 module.exports = {
   getById: async (req, res, next) => {
@@ -11,7 +12,7 @@ module.exports = {
         }
       })
 
-      res.status(200).json({ user: user })
+      res.status(200).json({ user })
     } catch (error) {
       res.status(400).json({ message: error })
     }
@@ -73,7 +74,28 @@ module.exports = {
 
   authenticate: async (req, res, next) => {
     try {
-      
+      const { body: { email, password }} = req;
+
+      const user = await User.findOne({
+        where: {
+          email
+        }
+      });
+
+      if(user.email === email && user.password === password) {
+        const token = generateToken({
+          id: user.id
+        })
+
+        res.status(200).json({
+          token
+        })
+      } else {
+        res.status(401).json({
+          message: 'User or password incorrect'
+        })
+      }
+
     } catch (error) {
       res.status(400).json({ error })
     }
