@@ -8,6 +8,8 @@ router.get('/logs/:id', controller.getAllLogsFromUser)
 
 router.post('/signup', controller.create)
 
+router.post('/signin', controller.authenticate)
+
 router.patch('/:id', controller.update)
 
 router.delete('/:id', controller.deleteById)
