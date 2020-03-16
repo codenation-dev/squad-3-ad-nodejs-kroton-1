@@ -69,5 +69,13 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ error })
     }
+  },
+
+  authenticate: async (req, res, next) => {
+    try {
+      
+    } catch (error) {
+      res.status(400).json({ error })
+    }
   }
 }
