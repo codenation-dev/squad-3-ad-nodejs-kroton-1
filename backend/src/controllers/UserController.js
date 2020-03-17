@@ -1,5 +1,6 @@
 const { User } = require('../models')
 const { Log } = require('../models')
+const { schemaValidation, generateHashedPassword } = require('../utils/helpers')
 
 module.exports = {
   getById: async (req, res, next) => {
@@ -17,16 +18,6 @@ module.exports = {
     }
   },
 
-  create: async (req, res, next) => {
-    const { body } = req
-    try {
-      const result = await User.create(body)
-      res.status(200).json({ result })
-    } catch (error) {
-      res.status(400).json({ error })
-    }
-  },
-
   getAllLogsFromUser: async (req, res, next) => {
     const { id } = req.params
     try {
@@ -37,6 +28,43 @@ module.exports = {
         })
 
       res.status(200).json({ logs: allLogsFromUser.Logs })
+    } catch (error) {
+      res.status(400).json({ error })
+    }
+  },
+
+  create: async (req, res, next) => {
+    const { body: {name, email, password} } = req
+    
+    if(!(await schemaValidation().isValid({
+      name,
+      email,
+      password
+    }))) {
+      return res.status(400).json({ error: 'Email or name not valid' });
+    }
+
+    const existsEmail = await User.findOne({
+      where:
+        {
+            email
+        }
+    });
+
+    if(existsEmail) {
+      return res.status(400).json({ message: 'User email already existis.' });
+    }
+
+    try {
+      
+      const user = await User.create({
+        name,
+        email,
+        password: await generateHashedPassword(password)
+      })
+    
+      res.status(200).json({ user })
+
     } catch (error) {
       res.status(400).json({ error })
     }
