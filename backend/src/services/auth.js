@@ -9,7 +9,6 @@ module.exports = {
     return token;
   },
   decodeToken: (token) => {
-    console.log('Passou aqui')
     return jwt.verify(token, process.env.SECRET)
   }
 }
