@@ -1,4 +1,5 @@
 const { Log } = require('../models')
+const jwt = require('jsonwebtoken')
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -38,7 +39,9 @@ module.exports = {
   },
 
   create: async (req, res, next) => {
+    const token = req.body.token || req.query.token || req.headers['x-access-token']
     const logData = req.body
+
     try {
       const result = await Log.create(logData)
       res.status(200).json({ result })

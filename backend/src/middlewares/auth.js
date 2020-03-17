@@ -1,5 +1,6 @@
 const { User } = require('../models')
 const { generateToken, decodeToken } = require('../services/auth')
+const { compareHash } = require('../utils/helpers')
 
 module.exports = {
 
@@ -14,7 +15,7 @@ module.exports = {
             });
 
             if (user) {
-                if (user.email === email && user.password === password) {
+                if (user.email === email && compareHash(password, user.password)) {
                     const token = generateToken({
                         id: user.id
                     })

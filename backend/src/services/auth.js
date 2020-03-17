@@ -9,6 +9,13 @@ module.exports = {
     return token;
   },
   decodeToken: (token) => {
-      return jwt.verify(token, process.env.SECRET)
+    return jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        console.log('error: ', err)
+      } else {
+        console.log('decoded: ', decoded)
+      }
+    })
   }
+
 }
