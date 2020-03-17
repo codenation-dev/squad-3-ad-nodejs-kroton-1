@@ -66,8 +66,9 @@ module.exports = {
     });
 
     // somente verifica caso esteja mudando de email
-    
-    if(email !== user.email) {
+
+    if(email !== undefined) {
+      if(email !== user.email) {
         const existsEmail = await User.findOne({
             where:
             {
@@ -77,7 +78,9 @@ module.exports = {
         if(existsEmail) {
             return res.status(400).json({ message: 'User email already existis.' });
         }
+      }
     }
+    
     
     // verifica se a senha antiga bate com a senha atual, mas somente se estiver querendo mudar de senha por isso o &&
     if(oldPassword && !(await compareHash(oldPassword, user.password))) {
@@ -88,7 +91,7 @@ module.exports = {
       const userUpdated = await User.update({
         name,
         email,
-        password
+        password: await generateHashedPassword(password)
       }, {
         where: {
           id

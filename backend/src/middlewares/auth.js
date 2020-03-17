@@ -7,15 +7,12 @@ module.exports = {
     authenticate: async (req, res, next) => {
         try {
             const { body: { email, password } } = req;
-
-            const user = await User.findOne({
-                where: {
-                    email
-                }
-            });
-
+            
+            const user = await User.findOne({ where: { email: email } });
+            
+            console.log(await compareHash(password, user.password))
             if (user) {
-                if (user.email === email && compareHash(password, user.password)) {
+                if (user.email === email && await compareHash(password, user.password)) {
                     const token = generateToken({
                         id: user.id
                     })
