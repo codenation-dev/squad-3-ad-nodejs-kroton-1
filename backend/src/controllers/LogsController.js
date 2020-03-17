@@ -1,5 +1,6 @@
 const { Log } = require('../models')
 const jwt = require('jsonwebtoken')
+const { decodeToken } = require('../services/auth')
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -39,11 +40,14 @@ module.exports = {
   },
 
   create: async (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token']
+    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    const { userId: {id} } = decodeToken(token)
     const logData = req.body
-
     try {
-      const result = await Log.create(logData)
+      const result = await Log.create({
+        ...logData, 
+        UserId: id
+      })
       res.status(200).json({ result })
     } catch (error) {
       res.status(400).json({ error })

@@ -13,7 +13,7 @@ module.exports = {
       if (err) {
         console.log('error: ', err)
       } else {
-        console.log('decoded: ', decoded)
+        return decoded
       }
     })
   }
