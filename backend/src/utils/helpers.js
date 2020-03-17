@@ -1,4 +1,5 @@
 const yup = require('yup');
+const bcrypt = require("bcryptjs");
 
 module.exports = {
   schemaValidation: () => {
@@ -9,5 +10,12 @@ module.exports = {
     password: yup.string().required().min(6)
   })
   return schema;
+  },
+
+  generateHashedPassword: async (password) => {
+
+    const hash = await bcrypt.hash(password, 8);
+  
+    return hash
   }
 }

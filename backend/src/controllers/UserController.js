@@ -1,6 +1,6 @@
 const { User } = require('../models')
 const { Log } = require('../models')
-const { schemaValidation } = require('../utils/helpers')
+const { schemaValidation, generateHashedPassword } = require('../utils/helpers')
 
 module.exports = {
   getById: async (req, res, next) => {
@@ -35,7 +35,7 @@ module.exports = {
 
   create: async (req, res, next) => {
     const { body: {name, email, password} } = req
-
+    
     if(!(await schemaValidation().isValid({
       name,
       email,
@@ -56,9 +56,13 @@ module.exports = {
     }
 
     try {
-
-      const user = await User.create(body)
-
+      
+      const user = await User.create({
+        name,
+        email,
+        password: await generateHashedPassword(password)
+      })
+    
       res.status(200).json({ user })
 
     } catch (error) {
