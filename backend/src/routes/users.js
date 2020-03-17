@@ -7,7 +7,7 @@ router.post('/signup', controller.create)
 
 router.post('/signin', authenticate)
 
-router.patch('/:id', authorize, controller.update)
+router.patch('/', authorize, controller.update)
 
 router.delete('/:id', authorize, controller.deleteById)
 

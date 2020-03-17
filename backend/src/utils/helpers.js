@@ -12,6 +12,21 @@ module.exports = {
     return schema;
   },
 
+  schemaValidationForCheckPassword: () => {
+    const schema = yup.object().shape({
+      name: yup.string(),
+      email: yup.string().email(),
+      oldPassword: yup.string().min(6),
+      password: yup.string().min(6).when('oldPassword', (oldPassword, field) => {
+          return oldPassword ? field.required() : field; // se a var oldPassword for true, o field fica required. Field refere-se ao password (nao ao oldPass).
+      }),
+      confirmPassword: yup.string().when('password', (password, field) => {
+          return password ? field.required().oneOf([yup.ref('password')]) : field; //  required().oneOf([])requere um dos campos que estão no array. Yup.ref se refere a outro campo. No caso garante que o campo confirmPassword seja igual ao password
+      })
+  });
+    return schema;
+  },
+
   generateHashedPassword: async (password) => {
 
     const hash = await bcrypt.hash(password, 8);
