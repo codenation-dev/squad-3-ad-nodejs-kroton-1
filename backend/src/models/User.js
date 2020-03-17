@@ -1,6 +1,6 @@
 // factory function para import do model na instância de conexão do sequelize
-module.exports = (sequelizeConfig, Sequelize) =>
-  sequelizeConfig.define('User', {
+module.exports = (sequelize, Sequelize) =>
+  sequelize.define('User', {
     name: {
       type: Sequelize.STRING,
       allowNull: false

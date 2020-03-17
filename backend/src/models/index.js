@@ -1,10 +1,9 @@
-const Sequelize = require('sequelize')
-const sequelizeConfig = require('../config/database'); // instancia de conexão com o banco de dados
+const { sequelize, Sequelize } = require('../config/database');
 
-const Log = sequelizeConfig.import('./Log.js')
-const User = sequelizeConfig.import('./User.js')
+const Log = require('./Log')(sequelize, Sequelize)
+const User = require('./User')(sequelize, Sequelize)
 
-User.hasMany(Log)
+User.hasMany(Log, { onDelete: 'restrict', onUpdate: 'restrict' })
 Log.belongsTo(User)
 
-module.exports = { User, Log, sequelizeConfig }
+module.exports = { User, Log, sequelize }

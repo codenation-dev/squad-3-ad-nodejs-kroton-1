@@ -1,5 +1,5 @@
-const { sequelizeConfig } = require('../models')
+const { sequelize } = require('../models')
 
-sequelizeConfig
+sequelize
   .sync({ alter: true })
   .then(() => console.log('Database synced on ' + process.env.NODE_ENV + ' mode'))
