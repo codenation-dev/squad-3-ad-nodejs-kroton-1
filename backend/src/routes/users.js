@@ -7,8 +7,8 @@ router.post('/signup', controller.create)
 
 router.post('/signin', authenticate)
 
-router.patch('/:id', authorize, controller.update)
+router.patch('/:username', authorize, controller.update)
 
-router.delete('/:id', authorize, controller.deleteById)
+router.delete('/:username', authorize, controller.deleteById)
 
 module.exports = router;

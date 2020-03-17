@@ -4,9 +4,10 @@ const { schemaValidation, generateHashedPassword } = require('../utils/helpers')
 
 module.exports = {
   create: async (req, res, next) => {
-    const { body: { name, email, password } } = req
+    const { body: { username, name, email, password } } = req
 
     if (!(await schemaValidation().isValid({
+      username,
       name,
       email,
       password
@@ -28,6 +29,7 @@ module.exports = {
     try {
 
       const user = await User.create({
+        username,
         name,
         email,
         password: await generateHashedPassword(password)
@@ -41,14 +43,14 @@ module.exports = {
   },
 
   update: async (req, res, next) => {
-    const { id } = req.params
+    const { username } = req.params
     const { body } = req
     const token = req.body.token || req.query.token || req.headers['x-access-token']
 
     try {
       await User.update(
         body, {
-        where: { id }
+        where: { username }
       })
 
       res.status(200).json({ message: 'user updated!' })
@@ -58,10 +60,10 @@ module.exports = {
   },
 
   deleteById: async (req, res, next) => {
-    const { id } = req.params
+    const { username } = req.params
     try {
       await User.destroy({
-        where: { id }
+        where: { username }
       })
       res.status(200).json({ message: 'user deleted succesfully' })
     } catch (error) {

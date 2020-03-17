@@ -17,7 +17,7 @@ module.exports = {
             if (user) {
                 if (user.email === email && compareHash(password, user.password)) {
                     const token = generateToken({
-                        id: user.id
+                        username: user.username
                     })
                     res.status(200).json({
                         token

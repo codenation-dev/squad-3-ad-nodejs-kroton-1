@@ -41,12 +41,12 @@ module.exports = {
 
   create: async (req, res, next) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    const { userId: {id} } = decodeToken(token)
+    const { username: {username} } = decodeToken(token)
     const logData = req.body
     try {
       const result = await Log.create({
         ...logData, 
-        UserId: id
+        UserUsername: username
       })
       res.status(200).json({ result })
     } catch (error) {
