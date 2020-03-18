@@ -1,29 +1,23 @@
 const { Log } = require('../models')
-const jwt = require('jsonwebtoken')
 const { decodeToken } = require('../services/auth')
 
 module.exports = {
-  getAll: async (req, res, next) => {
-    try {
-      const data = await Log.findAll()
-
-      res.status(200).json({
-        data
-      })
-    } catch (error) {
-      res.status(400).json({ error })
-    }
-  },
 
   getByLevel: async (req, res, next) => {
-    const { level } = req.params
     try {
+      const { level } = req.params
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id } } = decodeToken(token)
       const data = await Log.findAll({
-        where: { level }
-      })
+        where: {
+          UserId: id,
+          level
+        }
+       })
       res.status(201).json(data)
     } catch (error) {
       res.status(400).json({ error })
+      console.log(error)
     }
   },
 
@@ -41,11 +35,11 @@ module.exports = {
 
   create: async (req, res, next) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
-    const { userId: {id} } = decodeToken(token)
+    const { userId: { id } } = decodeToken(token)
     const logData = req.body
     try {
       const result = await Log.create({
-        ...logData, 
+        ...logData,
         UserId: id
       })
       res.status(200).json({ result })
@@ -54,8 +48,8 @@ module.exports = {
     }
   },
 
-  deleteById: async (req, res, next) => {
-    const { id } = req.params
+  deleteByLogId: async (req, res, next) => {
+    const { id } = req.params || req.body
     try {
       await Log.destroy({
         where: { id }
@@ -64,6 +58,18 @@ module.exports = {
     } catch (error) {
       res.status(400).json({ error })
     }
-  }
+  },
 
+  deleteAllLogsByUser: async (req, res, next) => {
+    try {
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id } } = decodeToken(token)
+      await Log.destroy({
+        where: { UserId: id },
+      })
+      res.status(200).json({ 'msg': 'Deleted successfully' })
+    } catch (error) {
+      res.status(400).json({ error })
+    }
+  },
 }

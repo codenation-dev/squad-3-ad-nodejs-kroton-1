@@ -2,24 +2,18 @@ const { User } = require('../models')
 const { Log } = require('../models')
 const { schemaValidation, schemaValidationForCheckPassword, generateHashedPassword, compareHash } = require('../utils/helpers')
 const { decodeToken } = require('../services/auth');
-
 module.exports = {
 
   getAllLogsFromUser: async (req, res, next) => {
     try {
-      const { id: idSent } = req.params
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
       const { userId: { id } } = decodeToken(token)
-      if (id == idSent) {
-        const allLogsFromUser = await User.findOne(
-          {
-            where: { id },
-            include: Log
-          })
-        res.status(200).json({ logs: allLogsFromUser.Logs })
-      } else {
-        res.status(401).json({ error: 'token invalid' })
-      }
+      const allLogsFromUser = await User.findOne(
+        {
+          where: { id },
+          include: Log
+        })
+      res.status(200).json({ logs: allLogsFromUser.Logs })
     } catch (error) {
       res.status(400).json({ error })
     }
@@ -65,13 +59,13 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const { body: { name, email, oldPassword, password, confirmPassword } } = req
-      
+
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
-      const { userId: {id} } = decodeToken(token)
+      const { userId: { id } } = decodeToken(token)
 
       // diferente da validação p/ create, aqui só vai ser required o password se o user informar o oldPassword, o que significa que ele quer alterar a senha
       // assim damos o when (uma valid condicional) para obrigar o user mudar a senha caso informe o oldPassword
-      if(!(await schemaValidationForCheckPassword().isValid({
+      if (!(await schemaValidationForCheckPassword().isValid({
         name,
         email,
         oldPassword,
@@ -89,28 +83,28 @@ module.exports = {
 
       // somente verifica caso esteja mudando de email
 
-      if(email !== undefined) {
-        if(email !== user.email) {
+      if (email !== undefined) {
+        if (email !== user.email) {
           const existsEmail = await User.findOne({
-              where:
-              {
-                  email
-              }
+            where:
+            {
+              email
+            }
           });
-          if(existsEmail) {
-              return res.status(400).json({ message: 'User email already existis.' });
+          if (existsEmail) {
+            return res.status(400).json({ message: 'User email already existis.' });
           }
         }
       }
-      
-      
+
+
       // verifica se a senha antiga bate com a senha atual, mas somente se estiver querendo mudar de senha por isso o &&
-      
-      if(oldPassword && !(await compareHash(oldPassword, user.password))) {
+
+      if (oldPassword && !(await compareHash(oldPassword, user.password))) {
         return res.status(401).json({ error: 'Password does not match' });
       }
-      
-      if(password !== undefined) {
+
+      if (password !== undefined) {
         const userUpdated = await User.update({
           name,
           email,
@@ -123,7 +117,7 @@ module.exports = {
 
         res.status(200).json({ data: userUpdated, message: 'user updated!' })
       }
-      
+
       const userUpdated = await User.update({
         name,
         email
@@ -142,17 +136,18 @@ module.exports = {
 
   deleteById: async (req, res, next) => {
     try {
-      const { id: idSent } = req.params
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
-      const { userId: { id }  } = decodeToken(token)
-      if (idSent == id) {
-        await User.destroy({
-          where: { id }
-        })
-        res.status(200).json({ message: 'user deleted succesfully' })
-      } else {
-        res.status(401).json({ error: 'token invalid' })
-      }
+      const { userId: { id } } = decodeToken(token)
+
+      await Log.destroy({
+        where: { UserId: id },
+      })
+
+      await User.destroy({
+        where: { id }
+      })
+      res.status(200).json({ message: 'user deleted succesfully' })
+
     } catch (error) {
       res.status(400).json({ error })
     }
