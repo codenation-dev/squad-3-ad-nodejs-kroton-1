@@ -3,7 +3,7 @@ const { decodeToken } = require('../services/auth')
 
 module.exports = {
 
-  getByLevel: async (req, res, next) => {
+  getByLevel: async (req, res) => {
     try {
       const { level } = req.params
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -21,7 +21,7 @@ module.exports = {
     }
   },
 
-  getByEnvironment: async (req, res, next) => {
+  getByEnvironment: async (req, res) => {
     try {
       const { environment } = req.params
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -39,7 +39,7 @@ module.exports = {
     }
   },
 
-  getBySender: async (req, res, next) => {
+  getBySender: async (req, res) => {
     const { sender_application } = req.params
     try {
       const data = await Log.findAll({
@@ -51,9 +51,10 @@ module.exports = {
     }
   },
 
-  create: async (req, res, next) => {
+  create: async (req, res) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     const { userId: { id } } = decodeToken(token)
+    
     const logData = req.body
     try {
       const result = await Log.create({
@@ -66,7 +67,23 @@ module.exports = {
     }
   },
 
-  deleteByLogId: async (req, res, next) => {
+  updateEnvironmentLog: async (req, res) => {
+    try {
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id } } = decodeToken(token)
+      const { logid } = req.params
+      const { body: { environment } } = req
+      
+      const environmentUpdated = await Log.update({ environment }, { where: { id: logid, UserId: id } })
+
+      res.status(200).json({ data: environmentUpdated, message: 'Log updated!' })
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({ error })
+    }
+  },
+
+  deleteByLogId: async (req, res) => {
     const { id } = req.params || req.body
     try {
       await Log.destroy({
@@ -78,7 +95,7 @@ module.exports = {
     }
   },
 
-  deleteAllLogsByUser: async (req, res, next) => {
+  deleteAllLogsByUser: async (req, res) => {
     try {
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
       const { userId: { id } } = decodeToken(token)
