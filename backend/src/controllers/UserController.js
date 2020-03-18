@@ -4,6 +4,27 @@ const { schemaValidation, schemaValidationForCheckPassword, generateHashedPasswo
 const { decodeToken } = require('../services/auth');
 
 module.exports = {
+
+  getAllLogsFromUser: async (req, res, next) => {
+    try {
+      const { id: idSent } = req.params
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id } } = decodeToken(token)
+      if (id == idSent) {
+        const allLogsFromUser = await User.findOne(
+          {
+            where: { id },
+            include: Log
+          })
+        res.status(200).json({ logs: allLogsFromUser.Logs })
+      } else {
+        res.status(401).json({ error: 'token invalid' })
+      }
+    } catch (error) {
+      res.status(400).json({ error })
+    }
+  },
+
   create: async (req, res, next) => {
     const { body: { name, email, password } } = req
 
