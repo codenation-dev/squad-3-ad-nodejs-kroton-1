@@ -5,7 +5,8 @@
   "main": "./src/bin/server.js",
   "scripts": {
     "start": "nodemon",
-    "sync": "node ./src/bin/databaseSynchronization.js",
+    "dbtest": "node ./src/bin/databaseConnectTesting.js", 
+    "syncdb": "node ./src/bin/databaseSynchronization.js",
     "docker": "docker-compose up -d"
   },
   "keywords": [],
