@@ -6,60 +6,78 @@ module.exports = {
 
   getByLevel: async (req, res) => {
     try {
-      const { level } = req.params
+      
+      const { params: { level } } = req
       const token = req.body.token || req.query.token || req.headers['x-access-token'];
       const { userId: { id } } = decodeToken(token)
-      const data = await Log.findAll({
+      const logs = await Log.findAll({
         where: {
           UserId: id,
           level
         }
        })
-      res.status(201).json(data)
+      
+      if(logs.length === 0) {
+      res.status(406).json({ message: 'Not acceptable' })
+      }
+
+      res.status(200).json(logs)
     } catch (error) {
-      res.status(400).json({ error })
       console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
   getByEnvironment: async (req, res) => {
     try {
-      const { environment } = req.params
-      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { params: { environment } } = req
+      const token = req.headers.authorization;
+      console.log(token)
       const { userId: { id } } = decodeToken(token)
-      const data = await Log.findAll({
+      const logs = await Log.findAll({
         where: {
           UserId: id,
           environment
         }
        })
-      res.status(201).json(data)
+
+      if(logs.length === 0) {
+      res.status(406).json({ message: 'Not acceptable' })
+      }
+      
+      res.status(200).json(logs)
     } catch (error) {
-      res.status(400).json({ error })
       console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
   getBySender: async (req, res) => {
-    const { sender_application } = req.params
     try {
-      const data = await Log.findAll({
+      const { params: { sender_application } } = req
+      const logs = await Log.findAll({
         where: { sender_application }
       })
-      res.status(201).json(data)
+
+      if(logs.length === 0) {
+        res.status(406).json({ message: 'Not acceptable' })
+        }
+
+      res.status(200).json(logs)
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
   create: async (req, res) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    const { token } = req.body || req.query || req.headers['x-access-token'];
     const { userId: { id } } = decodeToken(token)
 
     const schemaValidation = yup.object().shape({
       send_date: yup.date().required()
     })
-    console.log(req.body.send_date)
+    
     if (!(await schemaValidation.isValid({
       send_date: req.body.send_date
     }))) {
@@ -74,7 +92,8 @@ module.exports = {
       })
       res.status(200).json({ result })
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -90,7 +109,7 @@ module.exports = {
       res.status(200).json({ data: environmentUpdated, message: 'Log updated!' })
     } catch (error) {
       console.log(error)
-      res.status(400).json({ error })
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -102,7 +121,8 @@ module.exports = {
       })
       res.status(200).json({ 'msg': 'Deleted successfully' })
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -115,7 +135,8 @@ module.exports = {
       })
       res.status(200).json({ 'msg': 'Deleted successfully' })
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 }

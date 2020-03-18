@@ -15,7 +15,8 @@ module.exports = {
         })
       res.status(200).json({ logs: allLogsFromUser.Logs })
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -52,7 +53,8 @@ module.exports = {
       res.status(200).json({ user: user.name, email: user.email })
 
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -130,7 +132,7 @@ module.exports = {
       res.status(200).json({ data: userUpdated, message: 'user updated!' })
     } catch (error) {
       console.log(error)
-      res.status(400).json({ error: error })
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   },
 
@@ -149,7 +151,8 @@ module.exports = {
       res.status(200).json({ message: 'user deleted succesfully' })
 
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' } )
     }
   }
 }

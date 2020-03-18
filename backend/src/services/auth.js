@@ -9,6 +9,7 @@ module.exports = {
     return token;
   },
   decodeToken: (token) => {
-    return jwt.verify(token, process.env.SECRET)
+    const [, tokenSplited] = token.split(' '); 
+    return jwt.verify(tokenSplited, process.env.SECRET)
   }
 }

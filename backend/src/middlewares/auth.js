@@ -34,13 +34,19 @@ module.exports = {
     },
 
     authorize: async (req, res, next) => {
-        try {
-            const token = req.body.token || req.query.token || req.headers['x-access-token'];
-            const validatedToken = decodeToken(token)
+      try {
+        const { authorization } = req.headers;
+        
+          if(!authorization) {
+            return res.status(401).json({ error: 'Token not provided' });
+          }
+           
+            const validatedToken = decodeToken(authorization)
             if (validatedToken) {
                 next()
             }
         } catch (error) {
+          console.log(error)
             res.status(400).json({ error })
         }
     }
