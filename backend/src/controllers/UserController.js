@@ -145,14 +145,23 @@ module.exports = {
       const { authorization } = req.headers;
       const { userId: { id } } = decodeToken(authorization)
 
-      await Log.destroy({
-        where: { UserId: id },
-      })
-
-      await User.destroy({
+      const userExists = await User.findOne({
         where: { id }
       })
-      res.status(200).json({ message: 'user deleted succesfully' })
+
+      if(userExists) {
+        await Log.destroy({
+          where: { UserId: id },
+        })
+  
+        await User.destroy({
+          where: { id }
+        })
+  
+        res.status(200).json({ message: 'User deleted succesfully' })
+      } else {
+        res.status(406).json({ message: 'User not found!' })
+      }
 
     } catch (error) {
       console.log(error)
