@@ -21,6 +21,24 @@ module.exports = {
     }
   },
 
+  getByEnvironment: async (req, res, next) => {
+    try {
+      const { environment } = req.params
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id } } = decodeToken(token)
+      const data = await Log.findAll({
+        where: {
+          UserId: id,
+          environment
+        }
+       })
+      res.status(201).json(data)
+    } catch (error) {
+      res.status(400).json({ error })
+      console.log(error)
+    }
+  },
+
   getBySender: async (req, res, next) => {
     const { sender_application } = req.params
     try {

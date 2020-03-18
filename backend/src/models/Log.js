@@ -17,5 +17,10 @@ module.exports = (sequelize, Sequelize) =>
     send_date: {
       type: Sequelize.STRING,
       allowNull: false
+    },
+    environment: {
+      type: Sequelize.ENUM,
+      values: ['production', 'homologation', 'development'],
+      allowNull: false
     }
   });
