@@ -10,7 +10,6 @@ module.exports = {
             
             const user = await User.findOne({ where: { email: email } });
             
-            console.log(await compareHash(password, user.password))
             if (user) {
                 if (user.email === email && await compareHash(password, user.password)) {
                     const token = generateToken({

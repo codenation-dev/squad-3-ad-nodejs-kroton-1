@@ -28,7 +28,7 @@ module.exports = {
   },
 
   generateHashedPassword: async (password) => {
-
+    //console.log(password)
     const hash = await bcrypt.hash(password, 8);
 
     return hash
