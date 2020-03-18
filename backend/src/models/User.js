@@ -1,4 +1,3 @@
-// factory function para import do model na instância de conexão do sequelize
 module.exports = (sequelize, Sequelize) =>
   sequelize.define('User', {
     name: {

@@ -97,30 +97,6 @@ module.exports = {
     }
   },
 
-  /*  updateStatusLog: async (req, res) => {
-     try {
-       const { authorization } = req.headers;
-       const { userId: { id } } = decodeToken(authorization)
-       const { params: { logid } } = req
-       const { body: { status } } = req
-       const existLog = await Log.findOne({
-         where: {
-           id: logid
-         }
-       })
-       if (existLog) {
-         const statusUpdated = await Log.update({ status }, { where: { id: logid, UserId: id } })
-         res.status(200).json({ data: statusUpdated, message: 'Log updated!' })
-       } else {
-         return res.status(406).json({ message: 'Log not existis.' });
-       }
- 
-     } catch (error) {
-       console.log(error)
-       res.status(500).json({ message: 'Internal Server Error' })
-     }
-   }, */
-
   deleteByLogId: async (req, res) => {
     try {
       const { params: { id } } = req
