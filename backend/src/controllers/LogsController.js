@@ -1,5 +1,6 @@
 const { Log } = require('../models')
 const { decodeToken } = require('../services/auth')
+const yup = require('yup')
 
 module.exports = {
 
@@ -54,7 +55,17 @@ module.exports = {
   create: async (req, res) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     const { userId: { id } } = decodeToken(token)
-    
+
+    const schemaValidation = yup.object().shape({
+      send_date: yup.date().required()
+    })
+    console.log(req.body.send_date)
+    if (!(await schemaValidation.isValid({
+      send_date: req.body.send_date
+    }))) {
+      return res.status(400).json({ error: 'Send date is not valid' });
+    }
+
     const logData = req.body
     try {
       const result = await Log.create({
