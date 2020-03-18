@@ -6,8 +6,9 @@ module.exports = {
 
   getAllLogsFromUser: async (req, res, next) => {
     try {
-      const token = req.body.token || req.query.token || req.headers['x-access-token'];
-      const { userId: { id } } = decodeToken(token)
+      const { authorization } = req.headers;
+      const { userId: { id } } = decodeToken(authorization)
+      
       const allLogsFromUser = await User.findOne(
         {
           where: { id },
@@ -138,8 +139,8 @@ module.exports = {
 
   deleteById: async (req, res, next) => {
     try {
-      const token = req.body.token || req.query.token || req.headers['x-access-token'];
-      const { userId: { id } } = decodeToken(token)
+      const { authorization } = req.headers;
+      const { userId: { id } } = decodeToken(authorization)
 
       await Log.destroy({
         where: { UserId: id },

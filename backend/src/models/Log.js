@@ -29,4 +29,9 @@ module.exports = (sequelize, Sequelize) =>
       values: ['active', 'archived'],
       allowNull: false
     }
+  },
+  {
+    timestamps: true,
+    paranoid: true
   });
+  
