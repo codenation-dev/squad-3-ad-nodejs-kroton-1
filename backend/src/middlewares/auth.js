@@ -36,7 +36,7 @@ module.exports = {
     authorize: async (req, res, next) => {
       try {
         const { authorization } = req.headers;
-        
+        console.log(authorization)
           if(!authorization) {
             return res.status(401).json({ error: 'Token not provided' });
           }
