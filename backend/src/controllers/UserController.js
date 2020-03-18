@@ -141,12 +141,18 @@ module.exports = {
   },
 
   deleteById: async (req, res, next) => {
-    const { id } = req.params
     try {
-      await User.destroy({
-        where: { id }
-      })
-      res.status(200).json({ message: 'user deleted succesfully' })
+      const { id: idSent } = req.params
+      const token = req.body.token || req.query.token || req.headers['x-access-token'];
+      const { userId: { id }  } = decodeToken(token)
+      if (idSent == id) {
+        await User.destroy({
+          where: { id }
+        })
+        res.status(200).json({ message: 'user deleted succesfully' })
+      } else {
+        res.status(401).json({ error: 'token invalid' })
+      }
     } catch (error) {
       res.status(400).json({ error })
     }
