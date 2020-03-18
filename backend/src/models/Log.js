@@ -22,5 +22,11 @@ module.exports = (sequelize, Sequelize) =>
       type: Sequelize.ENUM,
       values: ['production', 'homologation', 'development'],
       allowNull: false
+    },
+    status: {
+      type: Sequelize.ENUM,
+      defaultValue: 'active',
+      values: ['active', 'archived'],
+      allowNull: false
     }
   });

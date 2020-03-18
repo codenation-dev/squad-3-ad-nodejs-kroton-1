@@ -11,7 +11,7 @@ router.get('/sender/:sender_application', authorize, controller.getBySender)
 
 router.post('/', authorize, controller.create)
 
-router.patch('/:logid', authorize, controller.updateEnvironmentLog)
+//router.patch('/:logid', authorize, controller.updateStatusLog)
 
 router.delete('/all', authorize, controller.deleteAllLogsByUser)
 
