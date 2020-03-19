@@ -1,5 +1,5 @@
-const yup = require('yup');
-const bcrypt = require("bcryptjs");
+const yup = require('yup')
+const bcrypt = require('bcryptjs')
 
 module.exports = {
   schemaValidation: () => {
@@ -9,7 +9,7 @@ module.exports = {
         email: yup.string().required().email(),
         password: yup.string().required().min(6)
       })
-    return schema;
+    return schema
   },
 
   schemaValidationForCheckPassword: () => {
@@ -18,26 +18,24 @@ module.exports = {
       email: yup.string().email(),
       oldPassword: yup.string().min(6),
       newPassword: yup.string().min(6).when('oldPassword', (oldPassword, field) => {
-          return oldPassword ? field.required() : field; 
+        return oldPassword ? field.required() : field
       }),
       confirmPassword: yup.string().when('newPassword', (password, field) => {
-          return password ? field.required().oneOf([yup.ref('newPassword')]) : field; 
+        return password ? field.required().oneOf([yup.ref('newPassword')]) : field
       })
-  });
-    return schema;
+    })
+    return schema
   },
 
   generateHashedPassword: async (password) => {
-    
-    const hash = await bcrypt.hash(password, 8);
+    const hash = await bcrypt.hash(password, 8)
 
     return hash
   },
 
   compareHash: async (password, hash) => {
-    
     const comparedHash = await bcrypt.compare(password, hash)
-    
+
     return comparedHash
   }
 }

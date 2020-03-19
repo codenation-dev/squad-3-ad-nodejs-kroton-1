@@ -9,11 +9,11 @@ module.exports = (sequelize, Sequelize) =>
       type: Sequelize.STRING,
       allowNull: false
     },
-    sender_application: {
+    senderApplication: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    send_date: {
+    sendDate: {
       type: Sequelize.STRING,
       allowNull: false
     },
@@ -32,5 +32,4 @@ module.exports = (sequelize, Sequelize) =>
   {
     timestamps: true,
     paranoid: true
-  });
-  
+  })

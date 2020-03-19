@@ -5,9 +5,10 @@
   "main": "./src/bin/server.js",
   "scripts": {
     "start": "nodemon",
-    "dbtest": "node ./src/bin/databaseConnectTesting.js", 
+    "dbtest": "node ./src/bin/databaseConnectTesting.js",
     "syncdb": "node ./src/bin/databaseSynchronization.js",
-    "docker": "docker-compose up -d"
+    "docker": "docker-compose up -d",
+    "test": "standard && node ./tests/server.test.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
     "yup": "^0.28.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "standard": "^14.3.3"
   }
 }

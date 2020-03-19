@@ -6,15 +6,11 @@ module.exports = {
 
   getByLevel: async (req, res) => {
     try {
-
       const { params: { level } } = req
-      const { authorization } = req.headers;
+      const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
       const logs = await Log.findAll({
-        where: {
-          UserId: id,
-          level
-        }
+        where: { UserId: id, level }
       })
 
       if (logs.length === 0) {
@@ -31,13 +27,10 @@ module.exports = {
   getByEnvironment: async (req, res) => {
     try {
       const { params: { environment } } = req
-      const { authorization } = req.headers;
+      const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
       const logs = await Log.findAll({
-        where: {
-          UserId: id,
-          environment
-        }
+        where: { UserId: id, environment }
       })
 
       if (logs.length === 0) {
@@ -53,9 +46,9 @@ module.exports = {
 
   getBySender: async (req, res) => {
     try {
-      const { params: { sender_application } } = req
+      const { params: { senderApplication } } = req
       const logs = await Log.findAll({
-        where: { sender_application }
+        where: { senderApplication }
       })
 
       if (logs.length === 0) {
@@ -71,19 +64,17 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { authorization } = req.headers;
-      const { userId: { id } } = decodeToken(authorization)
-      const { body: { send_date } } = req
+      const { authorization } = req.headers
+      const { body: { sendDate } } = req
       const logData = req.body
+      const { userId: { id } } = decodeToken(authorization)
 
       const schemaValidation = yup.object().shape({
         send_date: yup.date().required()
       })
 
-      if (!(await schemaValidation.isValid({
-        send_date
-      }))) {
-        return res.status(400).json({ error: 'Send date is not valid' });
+      if (!(await schemaValidation.isValid({ sendDate }))) {
+        return res.status(400).json({ error: 'Send date is not valid' })
       }
 
       const result = await Log.create({
@@ -110,9 +101,9 @@ module.exports = {
         await Log.destroy({
           where: { id }
         })
-        res.status(200).json({ 'msg': 'Deleted successfully' })
+        res.status(200).json({ msg: 'Deleted successfully' })
       } else {
-        return res.status(406).json({ message: 'Log not existis.' });
+        return res.status(406).json({ message: 'Log not existis.' })
       }
     } catch (error) {
       console.log(error)
@@ -122,7 +113,7 @@ module.exports = {
 
   deleteAllLogsByUser: async (req, res) => {
     try {
-      const { authorization } = req.headers;
+      const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
 
       const logs = await Log.findAll({
@@ -134,12 +125,12 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { UserId: id },
+        where: { UserId: id }
       })
       res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
-  },
+  }
 }
