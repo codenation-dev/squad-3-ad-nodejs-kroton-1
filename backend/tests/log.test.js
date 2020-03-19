@@ -21,20 +21,39 @@ afterAll(async () => {
 })
 
 describe('The API on users/signup Endpoint at POST method should...', () => {
+  const user = {
+    name: 'user test',
+    email: 'user_test@gmail.com',
+    password: '123456'
+  }
+  const log = {
+    level: 'FATAL',
+    description: 'Aplicattion down',
+    senderApplication: 'App_1',
+    sendDate: '10/10/2019 15:00',
+    environment: 'production'
+  }
+  const authorization = []
+
+  const expected = {
+    result: {
+      UserId: 1,
+      createdAt: '2020-02-15T18:01:01.000Z',
+      description: 'Aplicattion down',
+      environment: 'production',
+      id: 1,
+      level: 'FATAL',
+      sendDate: '10/10/2019 15:00',
+      senderApplication: 'App_1',
+      status: 'active',
+      updatedAt: '2020-02-15T18:01:01.000Z'
+    }
+  }
 
   beforeEach(async () => {
-    await User.create({
-      name: 'João da Silva',
-      email: 'joao@gmail.com',
-      password: '123456'
-    })
-    await Log.create({
-      level: 'FATAL',
-      description: 'Aplicattion down',
-      senderpplication: 'App_1',
-      sendDate: '01/10/2020 15:30',
-      environment: 'production'
-    })
+    await request(app).post('/users/signup').send(user)
+    const { body: { token } } = await request(app).post('/users/signin').send({ email: user.email, password: user.password })
+    await authorization.push(token)
   })
   afterEach(async () => {
     await Log.destroy({
@@ -46,15 +65,9 @@ describe('The API on users/signup Endpoint at POST method should...', () => {
   })
 
   test('return 200 as status code and the new token generated', async () => {
-
-    const user = {
-      name: 'user test',
-      email: 'user_test@gmail.com',
-      password: '123456'
-    }
-    const res = await request(app).post('/users/signup').send(user)
+    const res = await request(app).post('/logs').send(log).set('Authorization', `Bearer ${authorization[0]}`)
     expect(res.statusCode).toEqual(200)
-    expect(res.body).toEqual('')
+    expect(res.body).toMatchObject(expected)
   })
 
   test('return 401 as status code for a given user or password invalid', async () => {
