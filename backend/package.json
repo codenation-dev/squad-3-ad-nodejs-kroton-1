@@ -8,7 +8,7 @@
     "dbtest": "node ./src/bin/databaseConnectTesting.js",
     "syncdb": "node ./src/bin/databaseSynchronization.js",
     "docker": "docker-compose up -d",
-    "test": "jest tests/log.test.js"
+    "test": "jest tests/user.test.js"
   },
   "keywords": [],
   "author": "",
