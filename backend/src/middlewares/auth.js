@@ -6,10 +6,15 @@ module.exports = {
 
   authenticate: async (req, res) => {
     try {
+      if (Object.keys(req.body).length > 2) {
+        return res.status(406).json({ message: 'You are input more data then necessary' })
+      } else if (typeof req.body.password !== 'string') {
+        return res.status(406).json({ message: 'Password must be a string.' })
+      }
       const { body: { email, password } } = req
 
       const user = await User.findOne({
-        where: { email: email }
+        where: { email }
       })
 
       if (user) {
@@ -22,7 +27,7 @@ module.exports = {
           })
         } else {
           res.status(401).json({
-            message: 'User or password incorrect'
+            message: 'Incorrect password.'
           })
         }
       } else {
@@ -31,7 +36,8 @@ module.exports = {
         })
       }
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ error })
     }
   },
 
@@ -49,7 +55,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
-      res.status(400).json({ error })
+      res.status(500).json({ error })
     }
   }
 }

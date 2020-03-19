@@ -48,7 +48,7 @@ module.exports = {
       })
 
       if (existsEmail) {
-        return res.status(406).json({ message: 'User email already existis.' })
+        return res.status(409).json({ message: 'User email already exists.' })
       }
 
       const { dataValues: { name: userName, email: userEmail, createdAt } } = await User.create({
