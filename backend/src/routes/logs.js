@@ -3,11 +3,11 @@ const router = express.Router()
 const controller = require('../controllers/LogsController')
 const { authorize } = require('../middlewares/auth')
 
-router.get('/level/:level', authorize, controller.getByLevel)
+router.get('/sender/:senderApplication', authorize, controller.getBySender)
 
 router.get('/environment/:environment', authorize, controller.getByEnvironment)
 
-router.get('/sender/:senderApplication', authorize, controller.getBySender)
+router.get('/level/:level', authorize, controller.getByLevel)
 
 router.post('/', authorize, controller.create)
 

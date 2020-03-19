@@ -1,16 +1,14 @@
 const { Log } = require('../models')
 const { decodeToken } = require('../services/auth')
-const yup = require('yup')
+const { schemaValidationForLogs } = require('../utils/helpers')
 
 module.exports = {
 
-  getByLevel: async (req, res) => {
+  getBySender: async (req, res) => {
     try {
-      const { params: { level } } = req
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
+      const { params: { senderApplication } } = req
       const logs = await Log.findAll({
-        where: { UserId: id, level }
+        where: { senderApplication }
       })
 
       if (logs.length === 0) {
@@ -44,11 +42,13 @@ module.exports = {
     }
   },
 
-  getBySender: async (req, res) => {
+  getByLevel: async (req, res) => {
     try {
-      const { params: { senderApplication } } = req
+      const { params: { level } } = req
+      const { authorization } = req.headers
+      const { userId: { id } } = decodeToken(authorization)
       const logs = await Log.findAll({
-        where: { senderApplication }
+        where: { UserId: id, level }
       })
 
       if (logs.length === 0) {
@@ -65,16 +65,13 @@ module.exports = {
   create: async (req, res) => {
     try {
       const { authorization } = req.headers
-      const { body: { sendDate } } = req
       const logData = req.body
       const { userId: { id } } = decodeToken(authorization)
 
-      const schemaValidation = yup.object().shape({
-        send_date: yup.date().required()
-      })
+      const validatedModelLog = await schemaValidationForLogs(logData)
 
-      if (!(await schemaValidation.isValid({ sendDate }))) {
-        return res.status(400).json({ error: 'Send date is not valid' })
+      if (!(validatedModelLog)) {
+        return res.status(400).json({ error: 'Log body is not valid' })
       }
 
       const result = await Log.create({
