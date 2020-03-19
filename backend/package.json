@@ -8,7 +8,7 @@
     "dbtest": "node ./src/bin/databaseConnectTesting.js",
     "syncdb": "node ./src/bin/databaseSynchronization.js",
     "docker": "docker-compose up -d",
-    "test": "standard && node ./tests/server.test.js"
+    "test": "jest tests/log.test.js"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +25,9 @@
     "yup": "^0.28.3"
   },
   "devDependencies": {
+    "jest": "^25.1.0",
     "nodemon": "^2.0.2",
-    "standard": "^14.3.3"
+    "standard": "^14.3.3",
+    "supertest": "^4.0.2"
   }
 }
