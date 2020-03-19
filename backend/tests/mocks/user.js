@@ -1,4 +1,4 @@
-const userPossibilities = {
+const userPossibilitiesForCreate = {
   userWithValidData: {
     name: 'Raul Seixas',
     email: 'raulzito@gmail.com',
@@ -30,15 +30,47 @@ const userPossibilities = {
     password: '12345'
   },
   userWithNoEmail: {
-    name: '',
-    email: 'raulzito@gmail.com',
+    name: 'Raul Seixas',
+    email: '',
     password: '12345'
   },
   userWithNoPassword: {
     name: '',
     email: 'raulzito@gmail.com',
-    password: '12345'
+    password: ''
   }
 }
 
-module.exports = { userPossibilities }
+const userPossibilitiesForAuthenticate = {
+  userWithValidData: {
+    email: 'raulzito@gmail.com',
+    password: '123456'
+  },
+  userWithMoreData: {
+    name: 'Raul Seixas',
+    email: 'raulzito@gmail.com',
+    password: '123456'
+  },
+  userWithInvalidEmail: {
+    email: 'raulzitogmail.com',
+    password: '123456'
+  },
+  userWithInvalidPassword: {
+    email: 'raulzito@gmail.com',
+    password: '12345'
+  },
+  userWithTypeNumberPassword: {
+    email: 'raulzito@gmail.com',
+    password: 12345
+  },
+  userWithNoEmail: {
+    email: '',
+    password: '12345'
+  },
+  userWithNoPassword: {
+    email: 'raulzito@gmail.com',
+    password: ''
+  }
+}
+
+module.exports = { userPossibilitiesForCreate, userPossibilitiesForAuthenticate }
