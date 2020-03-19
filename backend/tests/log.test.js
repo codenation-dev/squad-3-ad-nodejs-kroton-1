@@ -53,7 +53,7 @@ describe('The API on users/signup Endpoint at POST method should...', () => {
   beforeEach(async () => {
     await request(app).post('/users/signup').send(user)
     const { body: { token } } = await request(app).post('/users/signin').send({ email: user.email, password: user.password })
-    await authorization.push(token)
+    authorization.push(token)
   })
   afterEach(async () => {
     await Log.destroy({
@@ -66,8 +66,8 @@ describe('The API on users/signup Endpoint at POST method should...', () => {
 
   test('return 200 as status code and the new token generated', async () => {
     const res = await request(app).post('/logs').send(log).set('Authorization', `Bearer ${authorization[0]}`)
-    expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject(expected)
+    expect(res.statusCode).toEqual(200)
   })
 
   test('return 401 as status code for a given user or password invalid', async () => {

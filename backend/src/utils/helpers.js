@@ -38,19 +38,23 @@ module.exports = {
     })
     return schema
   },
-  schemaValidationForLogs: (logData) => {
-    const schema = yup.object().shape({
-      level: yup.string(),
-      description: yup.string(),
-      senderApplication: yup.string(),
-      sendDate: yup.string(),
-      environment: yup.string()
-    })
-    const { _nodes } = schema
 
+  schemaValidationForLogs: async (logData) => {
+    const schema = yup.object().shape({
+      level: yup.string().required(),
+      description: yup.string().required(),
+      senderApplication: yup.string().required(),
+      sendDate: yup.string().required(),
+      environment: yup.string().required()
+    })
+
+    if (!(await schema.isValid(logData))) {
+      return false
+    }
+
+    const { _nodes } = schema
     for (const obj in logData) {
       if (_nodes.indexOf(obj) === -1) {
-        console.log(obj)
         return false
       }
     }
