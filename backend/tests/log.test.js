@@ -3,12 +3,12 @@ const request = require('supertest')
 const { app } = require('../src/app')
 const { sequelize, User, Log } = require('../src/models')
 const { mockLogs } = require('./mocks/logs')
-const { userPossibilitiesForCreate } = require('./mocks/user')
+const { userPossibilitiesForCreate: userSignup, userPossibilitiesForAuthenticate: userSignin } = require('./mocks/user')
 
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor () {
+  constructor() {
     return constantDate
   }
 }
@@ -22,7 +22,7 @@ afterAll(async () => {
   await sequelize.close()
 })
 
-describe('The API on /logs Endpoint at POST method should...', () => {
+describe('The API on /logs endpoint at POST method should...', () => {
   const authorization = []
 
   const expected = {
@@ -41,13 +41,11 @@ describe('The API on /logs Endpoint at POST method should...', () => {
   }
 
   beforeEach(async () => {
-    await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
-    const { body: { token } } = await request(app).post('/users/signin').send({
-      email: userPossibilitiesForCreate.userWithValidData.email,
-      password: userPossibilitiesForCreate.userWithValidData.password
-    })
+    await request(app).post('/users/signup').send(userSignup.userWithValidData)
+    const { body: { token } } = await request(app).post('/users/signin').send(userSignin.userWithValidData)
     authorization.push(token)
   })
+
   afterEach(async () => {
     await Log.destroy({
       truncate: true
@@ -62,6 +60,7 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.validLog)
       .set('Authorization', `Bearer ${authorization[0]}`)
+
     expect(res.body).toMatchObject(expected)
     expect(res.statusCode).toEqual(200)
   })
@@ -70,6 +69,7 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.invalidLogModel)
       .set('Authorization', `Bearer ${authorization[0]}`)
+
     expect(res.body).toMatchObject({ error: 'Log body is not valid' })
     expect(res.statusCode).toEqual(406)
   })
@@ -78,6 +78,7 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.invalidLogType)
       .set('Authorization', `Bearer ${authorization[0]}`)
+
     expect(res.body).toMatchObject({ error: 'Log body is not valid' })
     expect(res.statusCode).toEqual(406)
   })
@@ -86,6 +87,7 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.invalidLogDate)
       .set('Authorization', `Bearer ${authorization[0]}`)
+
     expect(res.body).toMatchObject({ error: 'Log body is not valid' })
     expect(res.statusCode).toEqual(406)
   })
@@ -94,6 +96,7 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.validLog)
       .set('Authorization', 'Bearer')
+
     expect(res.body).toMatchObject({
       error: {
         message: 'jwt must be provided',
@@ -113,5 +116,49 @@ describe('The API on /logs Endpoint at POST method should...', () => {
       }
     })
     expect(res.statusCode).toEqual(500)
+  })
+})
+
+describe('The API on logs/sender endpoint at GET method should...', () => {
+  const authorization = []
+
+  const expected = {
+    result: {
+      UserId: 1,
+      createdAt: '2020-02-15T18:01:01.000Z',
+      description: 'Aplicattion down',
+      environment: 'production',
+      id: 1,
+      level: 'FATAL',
+      sendDate: '10/10/2019 15:00',
+      senderApplication: 'App_1',
+      status: 'active',
+      updatedAt: '2020-02-15T18:01:01.000Z'
+    }
+  }
+
+  beforeEach(async () => {
+    await request(app).post('/users/signup').send(userSignup.userWithValidData)
+    const { body: { token } } = await request(app).post('/users/signin').send(userSignin.userWithValidData)
+    authorization.push(token)
+  })
+
+  afterEach(async () => {
+    await Log.destroy({
+      truncate: true
+    })
+    await User.destroy({
+      truncate: true
+    })
+    authorization.pop()
+  })
+
+  test('returns status code 406 and a message of error when the id nonexist', async () => {
+    const res = await request(app).get('/logs/sender/1').send(mockLogs.getLogBySenderApp).set('Authorization', `Bearer ${authorization[0]}`)
+    expect(res.body).toMatchObject({
+      message: 'Not acceptable',
+      error: 'Nonexistent id'
+    })
+    expect(res.statusCode).toEqual(406)
   })
 })
