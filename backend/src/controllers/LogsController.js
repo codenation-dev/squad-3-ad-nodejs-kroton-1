@@ -71,7 +71,7 @@ module.exports = {
       const validatedModelLog = await schemaValidationForLogs(logData)
 
       if (!(validatedModelLog)) {
-        return res.status(400).json({ error: 'Log body is not valid' })
+        return res.status(406).json({ error: 'Log body is not valid' })
       }
 
       const result = await Log.create({
