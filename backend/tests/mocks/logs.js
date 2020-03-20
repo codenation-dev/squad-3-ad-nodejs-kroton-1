@@ -33,13 +33,50 @@ const mockLogs = {
     senderApplication: 'App_1',
     sendDate: '25/25/2019 25:00', // Should be MM/dd/yyyy HH:mm
     environment: 'production'
-  },
-  getLogBySenderApp: {
-    senderApplication: 'App_1'
-  },
-  getLogByAnotherSenderApp: {
-    senderApplication: 'App_2'
   }
 }
 
-module.exports = { mockLogs }
+const expectedLogs = {
+  oneLog: {
+    result: {
+      UserId: 1,
+      createdAt: '2020-02-15T18:01:01.000Z',
+      description: 'Aplicattion down',
+      environment: 'production',
+      id: 1,
+      level: 'FATAL',
+      sendDate: '10/10/2019 15:00',
+      senderApplication: 'App_1',
+      status: 'active',
+      updatedAt: '2020-02-15T18:01:01.000Z'
+    }
+  },
+  twoLogs: [{
+    UserId: 1,
+    createdAt: '2020-02-15T18:01:01.000Z',
+    deletedAt: null,
+    description: 'Aplicattion down',
+    environment: 'production',
+    id: 1,
+    level: 'FATAL',
+    sendDate: '10/10/2019 15:00',
+    senderApplication: 'App_1',
+    status: 'active',
+    updatedAt: '2020-02-15T18:01:01.000Z'
+  },
+  {
+    UserId: 1,
+    createdAt: '2020-02-15T18:01:01.000Z',
+    deletedAt: null,
+    description: 'Aplicattion down',
+    environment: 'production',
+    id: 2,
+    level: 'FATAL',
+    sendDate: '10/10/2019 15:00',
+    senderApplication: 'App_1',
+    status: 'active',
+    updatedAt: '2020-02-15T18:01:01.000Z'
+  }]
+}
+
+module.exports = { mockLogs, expectedLogs }
