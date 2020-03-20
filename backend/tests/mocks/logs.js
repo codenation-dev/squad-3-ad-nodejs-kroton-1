@@ -6,6 +6,13 @@ const mockLogs = {
     sendDate: '10/10/2019 15:00',
     environment: 'production'
   },
+  validLogAnotherSenderApp: {
+    level: 'FATAL',
+    description: 'Aplicattion down',
+    senderApplication: 'App_2',
+    sendDate: '10/10/2019 15:00',
+    environment: 'production'
+  },
   invalidLogModel: {
     level: 'FATAL',
     description: 'Aplicattion down',
@@ -29,4 +36,47 @@ const mockLogs = {
   }
 }
 
-module.exports = { mockLogs }
+const expectedLogs = {
+  oneLog: {
+    result: {
+      UserId: 1,
+      createdAt: '2020-02-15T18:01:01.000Z',
+      description: 'Aplicattion down',
+      environment: 'production',
+      id: 1,
+      level: 'FATAL',
+      sendDate: '10/10/2019 15:00',
+      senderApplication: 'App_1',
+      status: 'active',
+      updatedAt: '2020-02-15T18:01:01.000Z'
+    }
+  },
+  twoLogs: [{
+    UserId: 1,
+    createdAt: '2020-02-15T18:01:01.000Z',
+    deletedAt: null,
+    description: 'Aplicattion down',
+    environment: 'production',
+    id: 1,
+    level: 'FATAL',
+    sendDate: '10/10/2019 15:00',
+    senderApplication: 'App_1',
+    status: 'active',
+    updatedAt: '2020-02-15T18:01:01.000Z'
+  },
+  {
+    UserId: 1,
+    createdAt: '2020-02-15T18:01:01.000Z',
+    deletedAt: null,
+    description: 'Aplicattion down',
+    environment: 'production',
+    id: 2,
+    level: 'FATAL',
+    sendDate: '10/10/2019 15:00',
+    senderApplication: 'App_1',
+    status: 'active',
+    updatedAt: '2020-02-15T18:01:01.000Z'
+  }]
+}
+
+module.exports = { mockLogs, expectedLogs }

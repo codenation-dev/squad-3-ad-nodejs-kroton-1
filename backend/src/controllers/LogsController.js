@@ -12,7 +12,10 @@ module.exports = {
       })
 
       if (logs.length === 0) {
-        res.status(406).json({ message: 'Not acceptable' })
+        return res.status(406).json({
+          message: 'Not acceptable',
+          error: 'Nonexistent id'
+        })
       }
 
       res.status(200).json(logs)
