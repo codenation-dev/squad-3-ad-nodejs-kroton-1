@@ -104,4 +104,4 @@ dist
 .tern-port
 
 #DB tests
-database_tests.sqlite
+#database_tests.sqlite
