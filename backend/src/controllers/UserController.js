@@ -1,6 +1,6 @@
 const { User } = require('../models')
 const { Log } = require('../models')
-const { schemaValidation, schemaValidationForCheckPassword, generateHashedPassword, compareHash } = require('../utils/helpers')
+const { schemaValidationForUsers, schemaValidationForCheckPassword, generateHashedPassword, compareHash } = require('../utils/helpers')
 const { decodeToken } = require('../services/auth')
 module.exports = {
 
@@ -30,7 +30,7 @@ module.exports = {
     try {
       const { body: { name, email, password } } = req
 
-      const validation = (await schemaValidation().isValid({
+      const validation = (await schemaValidationForUsers().isValid({
         name,
         email,
         password
@@ -48,7 +48,7 @@ module.exports = {
       })
 
       if (existsEmail) {
-        return res.status(406).json({ message: 'User email already existis.' })
+        return res.status(409).json({ message: 'User email already exists.' })
       }
 
       const { dataValues: { name: userName, email: userEmail, createdAt } } = await User.create({

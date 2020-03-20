@@ -1,15 +1,28 @@
 const { User } = require('../models')
 const { generateToken, decodeToken } = require('../services/auth')
-const { compareHash } = require('../utils/helpers')
+const { compareHash, schemaValidationForAuthenticate } = require('../utils/helpers')
 
 module.exports = {
 
   authenticate: async (req, res) => {
     try {
+      if (Object.keys(req.body).length > 2) {
+        return res.status(406).json({ message: 'You are input wrong data then necessary' })
+      }
+
       const { body: { email, password } } = req
 
+      const validation = (await schemaValidationForAuthenticate()).isValid({
+        email,
+        password
+      })
+
+      if (!validation) {
+        return res.status(406).json({ error: 'Data values are not valid' })
+      }
+
       const user = await User.findOne({
-        where: { email: email }
+        where: { email }
       })
 
       if (user) {
@@ -22,7 +35,7 @@ module.exports = {
           })
         } else {
           res.status(401).json({
-            message: 'User or password incorrect'
+            message: 'Incorrect password.'
           })
         }
       } else {
@@ -31,7 +44,8 @@ module.exports = {
         })
       }
     } catch (error) {
-      res.status(400).json({ error })
+      console.log(error)
+      res.status(500).json({ error })
     }
   },
 
@@ -49,7 +63,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
-      res.status(400).json({ error })
+      res.status(500).json({ error })
     }
   }
 }
