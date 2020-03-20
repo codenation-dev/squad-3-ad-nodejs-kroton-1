@@ -1,17 +1,25 @@
 const { User } = require('../models')
 const { generateToken, decodeToken } = require('../services/auth')
-const { compareHash } = require('../utils/helpers')
+const { compareHash, schemaValidationForAuthenticate } = require('../utils/helpers')
 
 module.exports = {
 
   authenticate: async (req, res) => {
     try {
       if (Object.keys(req.body).length > 2) {
-        return res.status(406).json({ message: 'You are input more data then necessary' })
-      } else if (typeof req.body.password !== 'string') {
-        return res.status(406).json({ message: 'Password must be a string.' })
+        return res.status(406).json({ message: 'You are input wrong data then necessary' })
       }
+
       const { body: { email, password } } = req
+
+      const validation = (await schemaValidationForAuthenticate()).isValid({
+        email,
+        password
+      })
+
+      if (!validation) {
+        return res.status(406).json({ error: 'Data values are not valid' })
+      }
 
       const user = await User.findOne({
         where: { email }
