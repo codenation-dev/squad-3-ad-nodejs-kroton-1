@@ -2,7 +2,7 @@
 const request = require('supertest')
 const { app } = require('../src/app')
 const { sequelize, User } = require('../src/models')
-const { userPossibilitiesForCreate, userPossibilitiesForAuthenticate } = require('./mocks/user')
+const { userPossibilitiesForCreate, userPossibilitiesForAuthenticate, userPossibilitiesForUpdate } = require('./mocks/user')
 
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
@@ -17,14 +17,15 @@ beforeAll(async () => {
     .sync({ force: true })
 })
 afterAll(async () => {
-  await sequelize.drop()
+  // await sequelize.drop()
   await sequelize.close()
 })
 
-describe('The API on /users/signup Endpoint at POST method should...', () => {
+describe.skip('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
     await User.destroy({
-      truncate: true
+      truncate: true,
+      force: true
     })
   })
 
@@ -90,17 +91,15 @@ describe('The API on /users/signup Endpoint at POST method should...', () => {
   })
 })
 
-describe('The API on /users/signin Endpoint at POST method should...', () => {
+describe.skip('The API on /users/signin Endpoint at POST method should...', () => {
   beforeEach(async () => {
-    await request(app).post('/users/signup').send({
-      name: 'Raul Seixas',
-      email: 'raulzito@gmail.com',
-      password: '123456'
-    })
+    await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
   })
+
   afterEach(async () => {
     await User.destroy({
-      truncate: true
+      truncate: true,
+      force: true
     })
   })
 
@@ -146,5 +145,42 @@ describe('The API on /users/signin Endpoint at POST method should...', () => {
     const res = await request(app).post('/users/signin').send(userPossibilitiesForAuthenticate.userWithNoPassword)
     expect(res.statusCode).toEqual(401)
     expect(res.body).toEqual({ message: 'Incorrect password.' })
+  })
+})
+
+describe('The API on /users Endpoint at PATCH method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await User.destroy({
+      truncate: true,
+      force: true
+    })
+    token.pop()
+  })
+
+  test('return status code 200 and ...', async () => {
+    console.log(token[0])
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithValidData)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!',
+      updatedEmail: 'raulzito123@gmail.com',
+      updatedName: 'New Raul Seixas'
+    })
   })
 })
