@@ -1,6 +1,6 @@
 const { Log } = require('../models')
 const { decodeToken } = require('../services/auth')
-const { schemaValidationForLogs } = require('../utils/helpers')
+const { schemaValidationForLogs } = require('../utils/validators')
 
 module.exports = {
 

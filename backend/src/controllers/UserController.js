@@ -1,6 +1,7 @@
 const { User } = require('../models')
 const { Log } = require('../models')
-const { schemaValidationForUsers, schemaValidationForCheckPassword, generateHashedPassword, compareHash } = require('../utils/helpers')
+const { generateHashedPassword, compareHash } = require('../utils/hashing')
+const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
 const { decodeToken } = require('../services/auth')
 module.exports = {
 
