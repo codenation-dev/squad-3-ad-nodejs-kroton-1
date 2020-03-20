@@ -44,7 +44,7 @@ module.exports = {
       level: yup.string().required(),
       description: yup.string().required(),
       senderApplication: yup.string().required(),
-      sendDate: yup.string().required(),
+      sendDate: yup.date().required(),
       environment: yup.string().required()
     })
 

@@ -2,13 +2,13 @@
 const request = require('supertest')
 const { app } = require('../src/app')
 const { sequelize, User, Log } = require('../src/models')
-const { logsPossibilities } = require('./mocks/logs')
-const { userPossibilities } = require('./mocks/user')
+const { mockLogs } = require('./mocks/logs')
+const { userPossibilitiesForCreate } = require('./mocks/user')
 
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor() {
+  constructor () {
     return constantDate
   }
 }
@@ -41,10 +41,10 @@ describe('The API on /logs Endpoint at POST method should...', () => {
   }
 
   beforeEach(async () => {
-    await request(app).post('/users/signup').send(userPossibilities.userWithValidData)
+    await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
     const { body: { token } } = await request(app).post('/users/signin').send({
-      email: userPossibilities.userWithValidData.email,
-      password: userPossibilities.userWithValidData.password
+      email: userPossibilitiesForCreate.userWithValidData.email,
+      password: userPossibilitiesForCreate.userWithValidData.password
     })
     authorization.push(token)
   })
@@ -55,21 +55,63 @@ describe('The API on /logs Endpoint at POST method should...', () => {
     await User.destroy({
       truncate: true
     })
+    authorization.pop()
   })
 
-  test('return 200 as status code and the result of the new log created', async () => {
+  test('returns 200 as status code and the result of the new log created', async () => {
     const res = await request(app).post('/logs')
-      .send(logsPossibilities.logWithValidData)
+      .send(mockLogs.validLog)
       .set('Authorization', `Bearer ${authorization[0]}`)
     expect(res.body).toMatchObject(expected)
     expect(res.statusCode).toEqual(200)
   })
 
-  test('return status code 406 and a message of error when a fild is invalid', async () => {
+  test('returns status code 406 and a message of error when a model is invalid', async () => {
     const res = await request(app).post('/logs')
-      .send(logsPossibilities.logWithInvalidLevel)
+      .send(mockLogs.invalidLogModel)
       .set('Authorization', `Bearer ${authorization[0]}`)
-    expect(res.body).toMatchObject(expected)
+    expect(res.body).toMatchObject({ error: 'Log body is not valid' })
     expect(res.statusCode).toEqual(406)
+  })
+
+  test('returns status code 406 and a message of error when a type is invalid', async () => {
+    const res = await request(app).post('/logs')
+      .send(mockLogs.invalidLogType)
+      .set('Authorization', `Bearer ${authorization[0]}`)
+    expect(res.body).toMatchObject({ error: 'Log body is not valid' })
+    expect(res.statusCode).toEqual(406)
+  })
+
+  test('returns status code 406 and a message of error when a date is invalid', async () => {
+    const res = await request(app).post('/logs')
+      .send(mockLogs.invalidLogDate)
+      .set('Authorization', `Bearer ${authorization[0]}`)
+    expect(res.body).toMatchObject({ error: 'Log body is not valid' })
+    expect(res.statusCode).toEqual(406)
+  })
+
+  test('returns status code 500 and a message of error when a token is missing', async () => {
+    const res = await request(app).post('/logs')
+      .send(mockLogs.validLog)
+      .set('Authorization', 'Bearer')
+    expect(res.body).toMatchObject({
+      error: {
+        message: 'jwt must be provided',
+        name: 'JsonWebTokenError'
+      }
+    })
+    expect(res.statusCode).toEqual(500)
+  })
+
+  test('returns status code 500 and a message of error when a token is invalid', async () => {
+    const res = await request(app).post('/logs')
+      .send(mockLogs.validLog)
+      .set('Authorization', 'Bearer um.token.qualquer')
+    expect(res.body).toMatchObject({
+      error: {
+        message: 'invalid token'
+      }
+    })
+    expect(res.statusCode).toEqual(500)
   })
 })
