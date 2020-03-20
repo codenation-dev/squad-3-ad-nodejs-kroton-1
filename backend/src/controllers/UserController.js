@@ -85,13 +85,11 @@ module.exports = {
       const user = await User.findOne({
         where: { id }
       })
+
       if (email !== undefined && email !== null) {
         if (email !== user.email) {
           const existsEmail = await User.findOne({
-            where:
-            {
-              email
-            }
+            where: { email }
           })
           if (existsEmail) {
             return res.status(406).json({ message: 'User email already exists.' })
@@ -104,29 +102,27 @@ module.exports = {
       }
 
       if (newPassword !== undefined) {
-        const userUpdated = await User.update({
+        await User.update({
           name,
           email,
           password: await generateHashedPassword(newPassword)
         }, {
-          where: {
-            id
-          }
-        })
-        res.status(200).json({ data: userUpdated, message: 'Password updated sucessfully!' })
-      } else {
-        const userUpdated = await User.update({
-          name,
-          email
-        }, {
-          where: {
-            id
-          }
+          where: { id },
+          returning: true,
+          plain: true
         })
 
-        console.log(userUpdated)
-        res.status(200).json({ data: userUpdated, message: 'user updated! somente email e name' })
+        const { dataValues: { name: updatedName, email: updatedEmail } } = await User.findOne({
+          where: { id }
+        })
+        console.log(updatedName, 'AQUIIII')
+        return res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
       }
+
+      await User.update({ name, email }, {
+        where: { id }
+      })
+      res.status(200).json({ data: '', message: 'User updated sucessfully!' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })

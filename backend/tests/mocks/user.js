@@ -73,4 +73,17 @@ const userPossibilitiesForAuthenticate = {
   }
 }
 
-module.exports = { userPossibilitiesForCreate, userPossibilitiesForAuthenticate }
+const userPossibilitiesForUpdate = {
+  userWithValidData: {
+    name: 'New Raul Seixas',
+    email: 'raulzito123@gmail.com',
+    oldPassword: '123456',
+    newPassword: '12345678',
+    confirmPassword: '12345678'
+  }
+}
+module.exports = {
+  userPossibilitiesForCreate,
+  userPossibilitiesForAuthenticate,
+  userPossibilitiesForUpdate
+}
