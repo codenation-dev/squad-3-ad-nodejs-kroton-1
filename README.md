@@ -20,6 +20,11 @@ git clone https://github.com/codenation-dev/squad-3-ad-nodejs-kroton-1.git
 ```
 npm i
 ```
+## Inicia o docker localmente
+
+```
+docker-compose up -d
+```
 
 ## Rodar aplicação localmente
 
