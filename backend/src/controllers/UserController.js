@@ -44,9 +44,9 @@ module.exports = {
 
       const existsEmail = await User.findOne({
         where:
-      {
-        email
-      }
+        {
+          email
+        }
       })
 
       if (existsEmail) {
@@ -80,7 +80,6 @@ module.exports = {
         newPassword,
         confirmPassword
       }))
-      console.log(validation)
       if (!validation) {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
@@ -100,7 +99,8 @@ module.exports = {
         }
       }
 
-      if (oldPassword && !(await compareHash(oldPassword, user.password))) {
+      const passwordMatch = await compareHash(oldPassword, user.password)
+      if (oldPassword && !passwordMatch) {
         return res.status(401).json({ error: 'Password does not match' })
       }
 
@@ -118,7 +118,6 @@ module.exports = {
         const { dataValues: { name: updatedName, email: updatedEmail } } = await User.findOne({
           where: { id }
         })
-        console.log(updatedName, 'AQUIIII')
         return res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
       }
 
@@ -132,7 +131,6 @@ module.exports = {
 
       res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
