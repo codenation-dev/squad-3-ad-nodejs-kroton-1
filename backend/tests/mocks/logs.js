@@ -47,7 +47,6 @@ const expectedLogs = {
       level: 'FATAL',
       sendDate: '10/10/2019 15:00',
       senderApplication: 'App_1',
-      status: 'active',
       updatedAt: '2020-02-15T18:01:01.000Z'
     }
   },
@@ -61,7 +60,6 @@ const expectedLogs = {
     level: 'FATAL',
     sendDate: '10/10/2019 15:00',
     senderApplication: 'App_1',
-    status: 'active',
     updatedAt: '2020-02-15T18:01:01.000Z'
   },
   {
@@ -74,7 +72,6 @@ const expectedLogs = {
     level: 'FATAL',
     sendDate: '10/10/2019 15:00',
     senderApplication: 'App_1',
-    status: 'active',
     updatedAt: '2020-02-15T18:01:01.000Z'
   }]
 }
