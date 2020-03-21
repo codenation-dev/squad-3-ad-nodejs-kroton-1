@@ -13,12 +13,12 @@ module.exports = {
 
       const { body: { email, password } } = req
 
-      const validation = (await schemaValidationForAuthenticate()).isValid({
+      const isValid = (await schemaValidationForAuthenticate()).isValid({
         email,
         password
       })
 
-      if (!validation) {
+      if (!isValid) {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
 
