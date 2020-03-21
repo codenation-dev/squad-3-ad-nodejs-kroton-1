@@ -1,7 +1,7 @@
 /* eslint-env jest */
 const request = require('supertest')
 const { app } = require('../src/app')
-const { sequelize, User } = require('../src/models')
+const { sequelize, User, Log } = require('../src/models')
 const { userPossibilitiesForCreate, userPossibilitiesForAuthenticate, userPossibilitiesForUpdate } = require('./mocks/user')
 
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
@@ -17,12 +17,13 @@ beforeAll(async () => {
     .sync({ force: true })
 })
 afterAll(async () => {
-  // await sequelize.drop()
+  await sequelize.drop()
   await sequelize.close()
 })
 
-describe.skip('The API on /users/signup Endpoint at POST method should...', () => {
+describe('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
+    await Log.drop()
     await User.destroy({
       truncate: true,
       force: true
@@ -130,7 +131,7 @@ describe.skip('The API on /users/signup Endpoint at POST method should...', () =
   })
 })
 
-describe.skip('The API on /users/signin Endpoint at POST method should...', () => {
+describe('The API on /users/signin Endpoint at POST method should...', () => {
   beforeEach(async () => {
     await request(app)
       .post('/users/signup')
@@ -138,6 +139,7 @@ describe.skip('The API on /users/signin Endpoint at POST method should...', () =
   })
 
   afterEach(async () => {
+    await Log.drop()
     await User.destroy({
       truncate: true,
       force: true
@@ -203,6 +205,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
   })
 
   afterEach(async () => {
+    await Log.drop()
     await User.destroy({
       truncate: true,
       force: true
