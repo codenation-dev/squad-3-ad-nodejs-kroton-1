@@ -13,12 +13,12 @@ module.exports = {
 
       const { body: { email, password } } = req
 
-      const validation = (await schemaValidationForAuthenticate()).isValid({
+      const isValid = (await schemaValidationForAuthenticate()).isValid({
         email,
         password
       })
 
-      if (!validation) {
+      if (!isValid) {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
 
@@ -26,26 +26,14 @@ module.exports = {
         where: { email }
       })
 
-      if (user) {
-        if (user.email === email && await compareHash(password, user.password)) {
-          const token = generateToken({
-            id: user.id
-          })
-          res.status(200).json({
-            token
-          })
-        } else {
-          res.status(401).json({
-            message: 'Incorrect password.'
-          })
-        }
+      const isValidPassword = await compareHash(password, user.password)
+      if (isValidPassword) {
+        const token = generateToken({ id: user.id })
+        res.status(200).json({ token })
       } else {
-        res.status(400).json({
-          message: 'User not found'
-        })
+        res.status(401).json({ message: 'Incorrect password' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ error })
     }
   },
