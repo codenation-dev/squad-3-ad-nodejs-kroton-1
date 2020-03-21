@@ -11,17 +11,16 @@ module.exports = {
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
 
-      const { dataValues: { Logs } } = await User.findOne(
-        {
-          where: { id },
-          include: Log
-        })
+      const { dataValues: { Logs } } = await User.findOne({
+        where: { id },
+        include: Log
+      })
 
       if (Logs.length === 0) {
-        res.status(406).json({ message: 'There is no logs recorded' })
-      } else {
-        res.status(200).json({ Logs })
+        return res.status(406).json({ message: 'There is no logs recorded' })
       }
+
+      return res.status(200).json({ Logs })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -43,10 +42,7 @@ module.exports = {
       }
 
       const existsEmail = await User.findOne({
-        where:
-        {
-          email
-        }
+        where: { email }
       })
 
       if (existsEmail) {
@@ -59,7 +55,7 @@ module.exports = {
         password: await generateHashedPassword(password)
       })
 
-      res.status(201).json({ message: 'User created successfully!', data: { userName, userEmail, createdAt } })
+      return res.status(201).json({ message: 'User created successfully!', data: { userName, userEmail, createdAt } })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -80,6 +76,7 @@ module.exports = {
         newPassword,
         confirmPassword
       }))
+
       if (!validation) {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
@@ -88,15 +85,8 @@ module.exports = {
         where: { id }
       })
 
-      if (email !== undefined && email !== null) {
-        if (email !== user.email) {
-          const existsEmail = await User.findOne({
-            where: { email }
-          })
-          if (existsEmail) {
-            return res.status(406).json({ message: 'User email already exists.' })
-          }
-        }
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' })
       }
 
       const passwordMatch = await compareHash(oldPassword, user.password)
@@ -129,7 +119,7 @@ module.exports = {
         where: { id }
       })
 
-      res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
+      return res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
     } catch (error) {
       res.status(500).json({ message: 'Internal Server Error' })
     }
@@ -144,19 +134,19 @@ module.exports = {
         where: { id }
       })
 
-      if (userExists) {
-        await Log.destroy({
-          where: { UserId: id }
-        })
-
-        await User.destroy({
-          where: { id }
-        })
-
-        res.status(200).json({ message: 'User deleted succesfully' })
-      } else {
-        res.status(406).json({ message: 'User not found!' })
+      if (!userExists) {
+        return res.status(406).json({ message: 'User not found!' })
       }
+
+      await Log.destroy({
+        where: { UserId: id }
+      })
+
+      await User.destroy({
+        where: { id }
+      })
+
+      return res.status(200).json({ message: 'User deleted succesfully' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
