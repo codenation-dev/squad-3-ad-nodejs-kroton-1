@@ -38,6 +38,11 @@ const userPossibilitiesForCreate = {
     name: '',
     email: 'raulzito@gmail.com',
     password: ''
+  },
+  userWithInvalidKeys: {
+    name: 'Raul Seixas',
+    mail: 'raulzito@gmail.com',
+    password: '123456'
   }
 }
 
@@ -79,6 +84,38 @@ const userPossibilitiesForUpdate = {
     email: 'raulzito123@gmail.com',
     oldPassword: '123456',
     newPassword: '12345678',
+    confirmPassword: '12345678'
+  },
+
+  userWithJustName: {
+    name: 'New Raul Seixas'
+  },
+
+  userWithJustEmail: {
+    email: 'raulzito123@gmail.com'
+  },
+
+  userJustWithValidPassword: {
+    oldPassword: '123456',
+    newPassword: '12345678',
+    confirmPassword: '12345678'
+  },
+
+  userWithInvalidOldPassword: {
+    oldPassword: '12345678',
+    newPassword: '12345678',
+    confirmPassword: '12345678'
+  },
+
+  userWithNotConfirmedPassword: {
+    oldPassword: '12345678',
+    newPassword: '12345678',
+    confirmPassword: ''
+  },
+
+  userWithTypeNumberNewPassword: {
+    oldPassword: '123456',
+    newPassword: 12345678,
     confirmPassword: '12345678'
   }
 }

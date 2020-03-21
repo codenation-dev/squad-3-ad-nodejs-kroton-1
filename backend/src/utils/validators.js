@@ -20,8 +20,8 @@ module.exports = {
       newPassword: yup.string().min(6).when('oldPassword', (oldPassword, field) => {
         return oldPassword ? field.required() : field
       }),
-      confirmPassword: yup.string().when('newPassword', (password, field) => {
-        return password ? field.required().oneOf([yup.ref('newPassword')]) : field
+      confirmPassword: yup.string().when('newPassword', (newPassword, field) => {
+        return newPassword ? field.required().oneOf([yup.ref('newPassword')]) : field
       })
     })
     return schema
@@ -38,13 +38,6 @@ module.exports = {
 
     if (!(await schema.isValid(logData))) {
       return false
-    }
-
-    const { _nodes } = schema
-    for (const obj in logData) {
-      if (_nodes.indexOf(obj) === -1) {
-        return false
-      }
     }
     return schema
   },

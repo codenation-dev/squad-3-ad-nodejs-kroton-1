@@ -3,6 +3,7 @@ const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
 const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
 const { decodeToken } = require('../services/auth')
+
 module.exports = {
 
   getAllLogsFromUser: async (req, res) => {
@@ -72,13 +73,15 @@ module.exports = {
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
 
-      if (!(await schemaValidationForCheckPassword().isValid({
+      const validation = (await schemaValidationForCheckPassword().isValid({
         name,
         email,
         oldPassword,
         newPassword,
         confirmPassword
-      }))) {
+      }))
+      console.log(validation)
+      if (!validation) {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
 
@@ -122,7 +125,12 @@ module.exports = {
       await User.update({ name, email }, {
         where: { id }
       })
-      res.status(200).json({ data: '', message: 'User updated sucessfully!' })
+
+      const { dataValues: { name: updatedName, email: updatedEmail } } = await User.findOne({
+        where: { id }
+      })
+
+      res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })

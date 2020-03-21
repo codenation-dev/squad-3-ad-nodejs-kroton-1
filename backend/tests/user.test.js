@@ -30,7 +30,10 @@ describe.skip('The API on /users/signup Endpoint at POST method should...', () =
   })
 
   test('return status code 201, the new data created and a message of sucess', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+
     expect(res.statusCode).toEqual(201)
     expect(res.body).toEqual({
       data: {
@@ -43,49 +46,85 @@ describe.skip('The API on /users/signup Endpoint at POST method should...', () =
   })
 
   test('return status code 409 and message when there are 2 users with the same email', async () => {
-    await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
-    const secoundRes = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
+    await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+
+    const secoundRes = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+
     expect(secoundRes.statusCode).toEqual(409)
     expect(secoundRes.body).toEqual({ message: 'User email already exists.' })
   })
   test('return status code 406 and a message of error when name is invalid', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithInvalidName)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithInvalidName)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when emails is invalid', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithInvalidEmail)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithInvalidEmail)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when minimum password length is invalid', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithInvalidPassword)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithInvalidPassword)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when password is type of number', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithTypeNumberPassword)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithTypeNumberPassword)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when user has no name', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithNoName)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithNoName)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when user has no email', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithNoEmail)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithNoEmail)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test('return status code 406 and a message of error when user has no password', async () => {
-    const res = await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithNoPassword)
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithNoPassword)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ error: 'Data values are not valid' })
+  })
+
+  test('return status code 406 and a message of error when invalid keys of the object', async () => {
+    const res = await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithInvalidKeys)
+
     expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
@@ -93,7 +132,9 @@ describe.skip('The API on /users/signup Endpoint at POST method should...', () =
 
 describe.skip('The API on /users/signin Endpoint at POST method should...', () => {
   beforeEach(async () => {
-    await request(app).post('/users/signup').send(userPossibilitiesForCreate.userWithValidData)
+    await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
   })
 
   afterEach(async () => {
@@ -169,18 +210,138 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     token.pop()
   })
 
-  test('return status code 200 and ...', async () => {
-    console.log(token[0])
+  test('return status code 200 and that log', async () => {
+    const mockLog = {
+      level: 'FATAL',
+      escription: 'Aplicattion down',
+      senderApplication: 'App_1',
+      sendDate: '10/10/2019 15:00',
+      environment: 'production'
+    }
+    const mockLog2 = {
+      level: 'FATAL',
+      escription: 'Aplicattion down',
+      senderApplication: '',
+      sendDate: '10/10/2019 15:00',
+      environment: 'production'
+    }
+    const res = await request(app)
+      .post('/logs')
+      .send(mockLog)
+      .set('Authorization', `Bearer ${token}`)
+
+    const res2 = await request(app)
+      .post('/logs')
+      .send(mockLog2)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({})
+    expect(res2.body).toEqual({})
+  })
+
+  test('return status code 200 and that log', async () => {
+    const mockLog2 = {
+      level: 'FATAL',
+      escription: 'Aplicattion down',
+      senderApplication: '',
+      sendDate: '10/10/2019 15:00',
+      environment: 'production'
+    }
+
+    const res2 = await request(app)
+      .post('/logs')
+      .send(mockLog2)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(200)
+
+    expect(res2.body).toEqual({})
+  })
+
+  test.skip('return status code 200 and name and email updated', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithValidData)
       .set('Authorization', `Bearer ${token}`)
 
-    expect(res.statusCode).toEqual(200)
+    // expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
       message: 'Updated sucessfully!',
       updatedEmail: 'raulzito123@gmail.com',
       updatedName: 'New Raul Seixas'
     })
+  })
+
+  test.skip('return status code 200 and the name updated', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithJustName)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!',
+      updatedEmail: 'raulzito@gmail.com',
+      updatedName: 'New Raul Seixas'
+    })
+  })
+
+  test.skip('return status code 200 and the email updated', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithJustEmail)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!',
+      updatedEmail: 'raulzito123@gmail.com',
+      updatedName: 'Raul Seixas'
+    })
+  })
+
+  test.skip('return status code 200 and the same name and email', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userJustWithValidPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!',
+      updatedEmail: 'raulzito@gmail.com',
+      updatedName: 'Raul Seixas'
+    })
+  })
+
+  test.skip('return status code 401 and error message', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithInvalidOldPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ error: 'Password does not match' })
+  })
+
+  test.skip('return status code 406 with not confirmed password and error message', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithNotConfirmedPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ error: 'Password does not match' })
+  })
+
+  test.skip('return status code 406 and error message when password is number', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithTypeNumberNewPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    // expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 })
