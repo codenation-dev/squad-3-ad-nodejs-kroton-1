@@ -213,55 +213,6 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     token.pop()
   })
 
-  test('return status code 200 and that log', async () => {
-    const mockLog = {
-      level: 'FATAL',
-      escription: 'Aplicattion down',
-      senderApplication: 'App_1',
-      sendDate: '10/10/2019 15:00',
-      environment: 'production'
-    }
-    const mockLog2 = {
-      level: 'FATAL',
-      escription: 'Aplicattion down',
-      senderApplication: '',
-      sendDate: '10/10/2019 15:00',
-      environment: 'production'
-    }
-    const res = await request(app)
-      .post('/logs')
-      .send(mockLog)
-      .set('Authorization', `Bearer ${token}`)
-
-    const res2 = await request(app)
-      .post('/logs')
-      .send(mockLog2)
-      .set('Authorization', `Bearer ${token}`)
-
-    // expect(res.statusCode).toEqual(200)
-    expect(res.body).toEqual({})
-    expect(res2.body).toEqual({})
-  })
-
-  test('return status code 200 and that log', async () => {
-    const mockLog2 = {
-      level: 'FATAL',
-      escription: 'Aplicattion down',
-      senderApplication: '',
-      sendDate: '10/10/2019 15:00',
-      environment: 'production'
-    }
-
-    const res2 = await request(app)
-      .post('/logs')
-      .send(mockLog2)
-      .set('Authorization', `Bearer ${token}`)
-
-    // expect(res.statusCode).toEqual(200)
-
-    expect(res2.body).toEqual({})
-  })
-
   test.skip('return status code 200 and name and email updated', async () => {
     const res = await request(app)
       .patch('/users')
