@@ -21,7 +21,7 @@ afterAll(async () => {
   await sequelize.close()
 })
 
-describe('The API on /users/signup Endpoint at POST method should...', () => {
+describe.skip('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
     await Log.drop()
     await User.destroy({
@@ -131,7 +131,7 @@ describe('The API on /users/signup Endpoint at POST method should...', () => {
   })
 })
 
-describe('The API on /users/signin Endpoint at POST method should...', () => {
+describe.skip('The API on /users/signin Endpoint at POST method should...', () => {
   beforeEach(async () => {
     await request(app)
       .post('/users/signup')
@@ -191,7 +191,7 @@ describe('The API on /users/signin Endpoint at POST method should...', () => {
   })
 })
 
-describe('The API on /users Endpoint at PATCH method should...', () => {
+describe.skip('The API on /users Endpoint at PATCH method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app).post('/users/signup')
@@ -213,13 +213,13 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     token.pop()
   })
 
-  test.skip('return status code 200 and name and email updated', async () => {
+  test('return status code 200 and name and email updated', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithValidData)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
       message: 'Updated sucessfully!',
       updatedEmail: 'raulzito123@gmail.com',
@@ -255,13 +255,13 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and the same name and email', async () => {
+  test('return status code 200 and the same name and email', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userJustWithValidPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
       message: 'Updated sucessfully!',
       updatedEmail: 'raulzito@gmail.com',
@@ -269,24 +269,24 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 401 and error message', async () => {
+  test('return status code 401 and error message', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithInvalidOldPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(401)
+    expect(res.statusCode).toEqual(401)
     expect(res.body).toEqual({ error: 'Password does not match' })
   })
 
-  test.skip('return status code 406 with not confirmed password and error message', async () => {
+  test('return status code 406 with not confirmed password and error message', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithNotConfirmedPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Password does not match' })
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ error: 'Data values are not valid' })
   })
 
   test.skip('return status code 406 and error message when password is number', async () => {
@@ -295,7 +295,30 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
       .send(userPossibilitiesForUpdate.userWithTypeNumberNewPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(406)
+    expect(res.statusCode).toEqual(406)
     expect(res.body).toEqual({ error: 'Data values are not valid' })
+  })
+})
+
+describe('The API on /users Endpoint at PATCH method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.destroy({
+      truncate: true,
+      force: true
+    })
+    token.pop()
   })
 })
