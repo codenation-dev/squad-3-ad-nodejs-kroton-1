@@ -92,11 +92,11 @@ module.exports = {
     try {
       const { params: { id } } = req
 
-      const existLog = await Log.findOne({
+      const logExist = await Log.findOne({
         where: { id }
       })
 
-      if (!existLog) {
+      if (!logExist) {
         return res.status(406).json({ message: 'Log not existis.' })
       }
 
