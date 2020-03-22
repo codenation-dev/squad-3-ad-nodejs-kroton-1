@@ -163,7 +163,7 @@ describe('The API on /users/signin Endpoint at POST method should...', () => {
   test('return status code 401 and a message of incorrect password when password is invalid', async () => {
     const res = await request(app).post('/users/signin').send(userPossibilitiesForAuthenticate.userWithInvalidPassword)
     expect(res.statusCode).toEqual(401)
-    expect(res.body).toEqual({ message: 'Incorrect password.' })
+    expect(res.body).toEqual({ message: 'Incorrect password' })
   })
 
   test('return status code 406 and a message of error when there is more data then of necessary', async () => {
@@ -187,7 +187,7 @@ describe('The API on /users/signin Endpoint at POST method should...', () => {
   test('return status code 401 and a message of error when user has no password', async () => {
     const res = await request(app).post('/users/signin').send(userPossibilitiesForAuthenticate.userWithNoPassword)
     expect(res.statusCode).toEqual(401)
-    expect(res.body).toEqual({ message: 'Incorrect password.' })
+    expect(res.body).toEqual({ message: 'Incorrect password' })
   })
 })
 

@@ -18,7 +18,7 @@ module.exports = {
         })
       }
 
-      res.status(200).json(logs)
+      return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -35,10 +35,10 @@ module.exports = {
       })
 
       if (logs.length === 0) {
-        res.status(406).json({ message: 'Not acceptable' })
+        return res.status(406).json({ message: 'Not acceptable' })
       }
 
-      res.status(200).json(logs)
+      return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -55,10 +55,10 @@ module.exports = {
       })
 
       if (logs.length === 0) {
-        res.status(406).json({ message: 'Not acceptable' })
+        return res.status(406).json({ message: 'Not acceptable' })
       }
 
-      res.status(200).json(logs)
+      return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -73,7 +73,7 @@ module.exports = {
 
       const validatedModelLog = await schemaValidationForLogs(logData)
 
-      if (!(validatedModelLog)) {
+      if (!validatedModelLog) {
         return res.status(406).json({ error: 'Log body is not valid' })
       }
 
@@ -81,7 +81,8 @@ module.exports = {
         ...logData,
         UserId: id
       })
-      res.status(200).json({ result })
+
+      return res.status(200).json({ result })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -93,18 +94,18 @@ module.exports = {
       const { params: { id } } = req
 
       const existLog = await Log.findOne({
-        where: {
-          id
-        }
+        where: { id }
       })
-      if (existLog) {
-        await Log.destroy({
-          where: { id }
-        })
-        res.status(200).json({ msg: 'Deleted successfully' })
-      } else {
+
+      if (!existLog) {
         return res.status(406).json({ message: 'Log not existis.' })
       }
+
+      await Log.destroy({
+        where: { id }
+      })
+
+      return res.status(200).json({ msg: 'Deleted successfully' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -121,13 +122,14 @@ module.exports = {
       })
 
       if (logs.length === 0) {
-        res.status(406).json({ message: 'There is no logs to delete' })
+        return res.status(406).json({ message: 'There is no logs to delete' })
       }
 
       await Log.destroy({
         where: { UserId: id }
       })
-      res.status(200).json({ message: 'Deleted successfully' })
+
+      return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })

@@ -26,14 +26,19 @@ module.exports = {
         where: { email }
       })
 
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' })
+      }
+
       const isValidPassword = await compareHash(password, user.password)
       if (isValidPassword) {
         const token = generateToken({ id: user.id })
-        res.status(200).json({ token })
+        return res.status(200).json({ token })
       } else {
-        res.status(401).json({ message: 'Incorrect password' })
+        return res.status(401).json({ message: 'Incorrect password' })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error })
     }
   },
