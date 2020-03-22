@@ -104,9 +104,8 @@ module.exports = {
         where: { id }
       })
 
-      return res.status(200).json({ msg: 'Deleted successfully' })
+      return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
