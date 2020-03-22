@@ -163,7 +163,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
     await cleanDB()
   })
 
-  test('returns 200 as status code and a successfull message', async () => {
+  test('returns status code 200 and a successfull message', async () => {
     const res = await request(app)
       .delete('/logs/1')
       .set('Authorization', `Bearer ${authorization[0]}`)
@@ -172,7 +172,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
     expect(res.body).toMatchObject({ message: 'Deleted successfully' })
   })
 
-  test('returns 406 as status code and a message when the log does not exist', async () => {
+  test('returns status code 406 and a message when the log does not exist', async () => {
     const res = await request(app)
       .delete('/logs/90')
       .set('Authorization', `Bearer ${authorization[0]}`)
