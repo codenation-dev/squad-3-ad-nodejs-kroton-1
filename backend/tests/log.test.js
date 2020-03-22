@@ -10,41 +10,41 @@ const authorization = []
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor () {
+  constructor() {
     return constantDate
   }
 }
 
 // ----- Funções usadas por todos os testes
-async function signUp (user) {
+async function signUp(user) {
   await request(app)
     .post('/users/signup')
     .send(user)
 }
 
-async function signIn (user) {
+async function signIn(user) {
   const { body: { token } } = await request(app)
     .post('/users/signin')
     .send(user)
   authorization.push(token)
 }
 
-async function createLog (log) {
+async function createLog(log) {
   return request(app)
     .post('/logs').send(log)
     .set('Authorization', `Bearer ${authorization[0]}`)
 }
 
-async function cleanDB () {
+async function cleanDB() {
   await sequelize.sync({ force: true })
   authorization.pop()
 }
 
 // ----- all
 beforeAll(async () => {
-  await sequelize
-    .sync({ force: true })
+  await sequelize.sync({ force: true })
 })
+
 afterAll(async () => {
   await sequelize.drop()
   await sequelize.close()
@@ -101,10 +101,7 @@ describe('The API on /logs endpoint at POST method should...', () => {
       .set('Authorization', 'Bearer')
 
     expect(res.body).toMatchObject({
-      error: {
-        message: 'jwt must be provided',
-        name: 'JsonWebTokenError'
-      }
+      error: { message: 'jwt must be provided', name: 'JsonWebTokenError' }
     })
     expect(res.statusCode).toEqual(500)
   })
@@ -113,11 +110,7 @@ describe('The API on /logs endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.validLog)
       .set('Authorization', 'Bearer um.token.qualquer')
-    expect(res.body).toMatchObject({
-      error: {
-        message: 'invalid token'
-      }
-    })
+    expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
     expect(res.statusCode).toEqual(500)
   })
 })
