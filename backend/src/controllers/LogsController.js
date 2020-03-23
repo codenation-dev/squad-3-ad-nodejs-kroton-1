@@ -183,6 +183,25 @@ module.exports = {
     }
   },
 
+  restoreLogById: async (req, res) => {
+    const { params: { id } } = req
+
+    const logs = await Log.findOne({
+      where: {
+        id
+      },
+      paranoid: false
+    })
+
+    if (!logs) {
+      return res.status(400).json({ message: 'There is no logs to restore' })
+    }
+
+    await Log.restore()
+
+    return res.status(200).json({ message: 'All logs restored successfully.' })
+  },
+
   restoreAllLogs: async (req, res) => {
     const { authorization } = req.headers
     const { userId: { id } } = decodeToken(authorization)
