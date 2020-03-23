@@ -125,7 +125,7 @@ module.exports = {
     }
   },
 
-  deleteById: async (req, res) => {
+  delete: async (req, res) => {
     try {
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
@@ -151,5 +151,58 @@ module.exports = {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
+  },
+
+  hardDelete: async (req, res) => {
+    try {
+      const { authorization } = req.headers
+      const { userId: { id } } = decodeToken(authorization)
+
+      const userExists = await User.findOne({
+        where: { id }
+      })
+
+      if (!userExists) {
+        return res.status(406).json({ message: 'User not found!' })
+      }
+
+      await Log.destroy({
+        where: { UserId: id }
+      })
+
+      await User.destroy({
+        where: {
+          id,
+          force: true
+        }
+      })
+
+      return res.status(200).json({ message: 'User deleted forever, this cannot be undone.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
+  restoreUser: async (req, res) => {
+    const { locals: { token } } = req
+    const { userId: { id } } = decodeToken(token)
+
+    const user = await User.findOne({
+      where: {
+        id
+      },
+      paranoid: false
+    })
+    console.log(user, 'USER FIND ONDE CONTROLLER AQUI')
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' })
+    }
+
+    const restoredUser = await User.restore({
+      where: { id }
+    })
+
+    return res.status(200).json({ data: restoredUser, message: 'User restored successfully.' })
   }
 }
