@@ -222,7 +222,6 @@ describe('The API on level/:level endpoint at GET method should...', () => {
     await cleanDB()
   })
 
-
   test('returns status code 200 when level is uppercase', async () => {
     const res = await request(app)
       .get('/logs/level/FATAL')
