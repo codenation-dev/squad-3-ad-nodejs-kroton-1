@@ -52,7 +52,9 @@ module.exports = {
       }
 
       const isValidToken = await decodeToken(authorization)
-      if (isValidToken) { next() }
+      if (isValidToken) {
+        next()
+      }
     } catch (error) {
       res.status(500).json({ error })
     }
