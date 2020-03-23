@@ -42,6 +42,66 @@ module.exports = {
       res.status(500).json({ error })
     }
   },
+  authenticateForRestoreUser: async (req, res, next) => {
+    try {
+      if (Object.keys(req.body).length > 2) {
+        return res.status(406).json({ message: 'You are input wrong data then necessary' })
+      }
+
+      const { body: { email, password } } = req
+
+      const isValid = (await schemaValidationForAuthenticate()).isValid({
+        email,
+        password
+      })
+
+      if (!isValid) {
+        return res.status(406).json({ error: 'Data values are not valid' })
+      }
+
+      const user = await User.findOne({
+        where: {
+          email
+        },
+        paranoid: false
+      })
+
+      if (!user) {
+        return res.status(400).json({ message: 'User not found' })
+      }
+
+      const isValidPassword = await compareHash(password, user.password)
+      if (isValidPassword) {
+        const token = generateToken({ id: user.id })
+
+        req.locals = {
+          token: `Bearer ${token}`
+        }
+        next()
+      } else {
+        return res.status(401).json({ message: 'Incorrect password' })
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error })
+    }
+  },
+
+  authorizeForRestoreUser: async (req, res, next) => {
+    try {
+      const { locals: { token } } = req
+      if (!token) {
+        return res.status(401).json({ error: 'Token not provided' })
+      }
+
+      const validatedToken = await decodeToken(token)
+      if (validatedToken) {
+        next()
+      }
+    } catch (error) {
+      res.status(500).json({ error })
+    }
+  },
 
   authorize: async (req, res, next) => {
     try {
@@ -51,7 +111,7 @@ module.exports = {
         return res.status(401).json({ error: 'Token not provided' })
       }
 
-      const validatedToken = decodeToken(authorization)
+      const validatedToken = await decodeToken(authorization)
       if (validatedToken) {
         next()
       }

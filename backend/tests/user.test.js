@@ -301,7 +301,7 @@ describe.skip('The API on /users Endpoint at PATCH method should...', () => {
   })
 })
 
-describe('The API on /users/logs Endpoint at GET method should...', () => {
+describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app)
@@ -395,5 +395,30 @@ describe('The API on /users/logs Endpoint at GET method should...', () => {
         name: 'JsonWebTokenError'
       }
     })
+  })
+
+  // deletar depois de ja ter deletado com o mesmo token
+})
+
+describe.skip('The API on /users Endpoint at DELETE method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.destroy({
+      truncate: true,
+      force: true
+    })
+    token.pop()
   })
 })
