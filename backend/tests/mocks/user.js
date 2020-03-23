@@ -87,8 +87,27 @@ const userPossibilitiesForUpdate = {
     confirmPassword: '12345678'
   },
 
+  userWithNameAndEmail: {
+    name: 'New Raul Seixas',
+    email: 'raulzito123@gmail.com'
+  },
+
+  userWithNameAndPassword: {
+    name: 'New Raul Seixas',
+    oldPassword: '123456',
+    newPassword: '12345678',
+    confirmPassword: '12345678'
+  },
+
   userWithJustName: {
     name: 'New Raul Seixas'
+  },
+
+  userWithEmailAndPassword: {
+    email: 'raulzito123@gmail.com',
+    oldPassword: '123456',
+    newPassword: '12345678',
+    confirmPassword: '12345678'
   },
 
   userWithJustEmail: {
@@ -116,6 +135,14 @@ const userPossibilitiesForUpdate = {
   userWithTypeNumberNewPassword: {
     oldPassword: '123456',
     newPassword: 12345678,
+    confirmPassword: '12345678'
+  },
+
+  userWithInvalidBody: {
+    ame: 'New Raul Seixas',
+    email: 'raulzito123@gmail.com',
+    oldPassword: '123456',
+    newPassword: '12345678',
     confirmPassword: '12345678'
   }
 }
