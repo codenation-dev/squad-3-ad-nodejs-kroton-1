@@ -422,3 +422,11 @@ describe.skip('The API on /users Endpoint at DELETE method should...', () => {
     token.pop()
   })
 })
+
+describe.skip('The API on /users/hard Endpoint at DELETE method should...', () => {
+
+})
+
+describe('The API on /users/restore Endpoint at POST method should...', () => {
+
+})

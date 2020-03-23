@@ -9,12 +9,12 @@ router.post('/signup', controller.create)
 
 router.post('/signin', authenticate)
 
+router.post('/restore', authenticateForRestoreUser, authorizeForRestoreUser, controller.restoreUser)
+
 router.patch('/', authorize, controller.update)
 
 router.delete('/', authorize, controller.delete)
 
 router.delete('/hard', authorize, controller.hardDelete)
-
-router.post('/restore', authenticateForRestoreUser, authorizeForRestoreUser, controller.restoreUser)
 
 module.exports = router
