@@ -111,6 +111,30 @@ module.exports = {
     }
   },
 
+  hardDeleteById: async (req, res) => {
+    try {
+      const { params: { id } } = req
+
+      const logExist = await Log.findOne({
+        where: { id }
+      })
+
+      if (!logExist) {
+        return res.status(406).json({ message: 'Log not existis.' })
+      }
+
+      await Log.destroy({
+        where: { id },
+        force: true
+      })
+
+      return res.status(200).json({ message: 'Log deleted forever, this cannot be undone.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
   deleteAllLogsByUser: async (req, res) => {
     try {
       const { authorization } = req.headers
@@ -160,7 +184,8 @@ module.exports = {
   },
 
   restoreAllLogs: async (req, res) => {
-    const { userId: { id } } = decodeToken(token)
+    const { authorization } = req.headers
+    const { userId: { id } } = decodeToken(authorization)
 
     const logs = await Log.findAll({
       where: {
