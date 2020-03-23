@@ -152,7 +152,7 @@ describe('The API on logs/sender endpoint at GET method should...', () => {
   })
 })
 
-describe('The API on logs/:id endpoint at DELETE method should...', () => {
+describe('The API on logs/id/:id endpoint at DELETE method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -165,7 +165,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
   test('returns status code 200 and a successfull message', async () => {
     const res = await request(app)
-      .delete('/logs/1')
+      .delete('/logs/id/1')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(200)
@@ -174,7 +174,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
   test('returns status code 406 and a message when the log does not exist', async () => {
     const res = await request(app)
-      .delete('/logs/90')
+      .delete('/logs/id/90')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(406)
@@ -183,7 +183,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
   test('returns status code 404 and an empty obj when log id is missing', async () => {
     const res = await request(app)
-      .delete('/logs/')
+      .delete('/logs/id')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(404)
@@ -192,7 +192,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
   test('returns status code 500 and a message of error when token is invalid', async () => {
     const res = await request(app)
-      .delete('/logs/1')
+      .delete('/logs/id/1')
       .set('Authorization', 'Bearer um.token.qualquer')
 
     expect(res.statusCode).toEqual(500)
@@ -201,7 +201,7 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
   test('returns status code 401 and a message of error when token is missing', async () => {
     const res = await request(app)
-      .delete('/logs/1')
+      .delete('/logs/id/1')
       .set('Authorization', 'Bearer')
 
     expect(res.statusCode).toEqual(500)

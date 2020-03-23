@@ -10,7 +10,7 @@ router.get('/level/:level', controller.getByLevel)
 
 router.post('/', controller.create)
 
-router.delete('/:id', controller.deleteByLogId)
+router.delete('/id/:id', controller.deleteByLogId)
 
 router.delete('/all', controller.deleteAllLogsByUser)
 
