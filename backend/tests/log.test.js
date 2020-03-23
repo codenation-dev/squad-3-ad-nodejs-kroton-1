@@ -51,7 +51,7 @@ afterAll(async () => {
 })
 
 // ----- Inicio dos testes
-describe.skip('The API on /logs endpoint at POST method should...', () => {
+describe('The API on /logs endpoint at POST method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -116,7 +116,7 @@ describe.skip('The API on /logs endpoint at POST method should...', () => {
   })
 })
 
-describe.skip('The API on logs/sender endpoint at GET method should...', () => {
+describe('The API on logs/sender endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -207,31 +207,4 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
     expect(res.statusCode).toEqual(500)
     expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
   })
-})
-
-describe.skip('The API on logs/all endpoint at DELETE method should...', () => {
-  beforeEach(async () => {
-    await signUp(userSignup)
-    await signIn(userSignin)
-    await createLog(mockLogs.validLog)
-  })
-
-  afterEach(async () => {
-    await cleanDB()
-  })
-
-  test('returns status code 200 and a successfull message', async () => {
-    console.log('**token: ', authorization[0])
-
-    const res = await request(app)
-      .delete('/logs/all')
-      .set('Authorization', `Bearer ${authorization[0]}`)
-
-    //expect(res.statusCode).toEqual(200)
-    expect(res.body).toMatchObject({ message: 'Deleted successfully' })
-  })
-
-  // test('', async () => {
-
-  // })
 })
