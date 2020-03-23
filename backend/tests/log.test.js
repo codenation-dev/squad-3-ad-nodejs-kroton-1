@@ -209,7 +209,8 @@ describe('The API on logs/id/:id endpoint at DELETE method should...', () => {
   })
 })
 
-describe('The API on environment/:environment endpoint at GET method should...', () => {
+describe('The API on level/:level endpoint at GET method should...', () => {
+
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -221,27 +222,47 @@ describe('The API on environment/:environment endpoint at GET method should...',
     await cleanDB()
   })
 
-  test('returns status code 200 and a successfull message', async () => {
+
+  test('returns status code 200 when level is uppercase', async () => {
     const res = await request(app)
-      .get('/logs/environment/production')
+      .get('/logs/level/FATAL')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject(expectedLogs.twoLogs)
   })
 
-  test('returns status code 200 when environment is uppercase', async () => {
+  test('returns status code 200 and when level is lowercase', async () => {
     const res = await request(app)
-      .get('/logs/environment/PRODUCTION')
+      .get('/logs/level/fatal')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toMatchObject(expectedLogs.twoLogs)
   })
 
-  test('returns status code 406 when environment is in portuguese', async () => {
+  test('returns status code 200 and when level is lowercase and uppercase', async () => {
     const res = await request(app)
-      .get('/logs/environment/produção')
+      .get('/logs/level/FAtal')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(expectedLogs.twoLogs)
+  })
+
+  test('returns status code 406 when level is invalid', async () => {
+    const res = await request(app)
+      .get('/logs/level/something')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toMatchObject({ message: 'Level does not exist' })
+  })
+
+  test('returns status code 500 when token is missing', async () => {
+    const res = await request(app)
+      .get('/logs/level/Fatal')
+      .set('Authorization', 'Bearer ')
       .set('Authorization', `Bearer ${authorization[0]}`)
 
     expect(res.statusCode).toEqual(406)
@@ -261,15 +282,13 @@ describe('The API on environment/:environment endpoint at GET method should...',
     const res = await request(app)
       .get('/logs/environment/production')
       .set('Authorization', 'Bearer')
-
     expect(res.statusCode).toEqual(500)
     expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
   })
 
-  test('returns status code 401 and a message of error when token is not provided', async () => {
+  test('returns status code 401 when token is not provided', async () => {
     const res = await request(app)
-      .get('/logs/environment/production')
-
+      .get('/logs/level/Fatal')
     expect(res.statusCode).toEqual(401)
     expect(res.body).toMatchObject({ error: 'Token not provided' })
   })
