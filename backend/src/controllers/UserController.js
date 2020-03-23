@@ -172,9 +172,9 @@ module.exports = {
 
       await User.destroy({
         where: {
-          id,
-          force: true
-        }
+          id
+        },
+        force: true
       })
 
       return res.status(200).json({ message: 'User deleted forever, this cannot be undone.' })

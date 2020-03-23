@@ -392,7 +392,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
   })
 })
 
-describe('The API on /users Endpoint at DELETE method should...', () => {
+describe.skip('The API on /users Endpoint at DELETE method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app).post('/users/signup')
@@ -464,8 +464,86 @@ describe('The API on /users Endpoint at DELETE method should...', () => {
   })
 })
 
-describe.skip('The API on /users/hard Endpoint at DELETE method should...', () => {
+describe('The API on /users/hard Endpoint at DELETE method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
 
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.drop()
+    token.pop()
+
+    await sequelize.sync({ force: true })
+  })
+
+  test('return status code 200 and a message od deletation', async () => {
+    const res = await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'User deleted forever, this cannot be undone.' })
+  })
+
+  test('return an empty array when search for all users but the have already deleted', async () => {
+    await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${token}`)
+
+    const findUser = await User.findAll()
+
+    expect(findUser).toEqual([])
+  })
+
+  test('return status 406 and a message when user not found or has already been deleted', async () => {
+    await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${token}`)
+    const res = await request(app)
+      .delete('/users')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ message: 'User not found!' })
+  })
+
+  test('return status when token is incorrect', async () => {
+    const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+    const res = await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${incorrectToken}`)
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'invalid signature',
+        name: 'JsonWebTokenError'
+      }
+    })
+  })
+
+  test('return status 500 when token not provided', async () => {
+    const res = await request(app)
+      .delete('/users/hard')
+      .set('Authorization', 'Bearer ')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'jwt must be provided',
+        name: 'JsonWebTokenError'
+      }
+    })
+  })
 })
 
 describe.skip('The API on /users/restore Endpoint at POST method should...', () => {
