@@ -55,13 +55,13 @@ module.exports = {
       })
 
       if (logs.length === 0) {
-        return res.status(406).json({ message: 'Not acceptable' })
+        return res.status(406).json({ message: 'Level does not exist' })
       }
 
       return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      res.status(500).json(error)
     }
   },
 

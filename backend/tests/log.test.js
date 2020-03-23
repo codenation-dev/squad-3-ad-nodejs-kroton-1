@@ -51,7 +51,7 @@ afterAll(async () => {
 })
 
 // ----- Inicio dos testes
-describe.skip('The API on /logs endpoint at POST method should...', () => {
+describe('The API on /logs endpoint at POST method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -116,7 +116,7 @@ describe.skip('The API on /logs endpoint at POST method should...', () => {
   })
 })
 
-describe.skip('The API on logs/sender endpoint at GET method should...', () => {
+describe('The API on logs/sender endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -197,5 +197,71 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
 
     expect(res.statusCode).toEqual(500)
     expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
+  })
+})
+
+describe('The API on level/:level endpoint at GET method should...', () => {
+  beforeEach(async () => {
+    await signUp(userSignup)
+    await signIn(userSignin)
+    await createLog(mockLogs.validLog)
+    await createLog(mockLogs.validLog)
+  })
+
+  afterEach(async () => {
+    await cleanDB()
+  })
+
+  test('returns status code 200 when level is uppercase', async () => {
+    const res = await request(app)
+      .get('/logs/level/FATAL')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(expectedLogs.twoLogs)
+  })
+
+  test('returns status code 200 and when level is lowercase', async () => {
+    const res = await request(app)
+      .get('/logs/level/fatal')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(expectedLogs.twoLogs)
+  })
+
+  test('returns status code 200 and when level is lowercase and uppercase', async () => {
+    const res = await request(app)
+      .get('/logs/level/FAtal')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject(expectedLogs.twoLogs)
+  })
+
+  test('returns status code 406 when level is invalid', async () => {
+    const res = await request(app)
+      .get('/logs/level/something')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toMatchObject({ message: 'Level does not exist' })
+  })
+
+  test('returns status code 500 when token is missing', async () => {
+    const res = await request(app)
+      .get('/logs/level/Fatal')
+      .set('Authorization', 'Bearer ')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
+  })
+
+  test('returns status code 401 when token is not provided', async () => {
+    const res = await request(app)
+      .get('/logs/level/Fatal')
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toMatchObject({ error: 'Token not provided' })
   })
 })
