@@ -110,9 +110,8 @@ module.exports = {
       if (!authorization) {
         return res.status(401).json({ error: 'Token not provided' })
       }
-
-      const validatedToken = await decodeToken(authorization)
-      if (validatedToken) {
+      const isValidToken = await decodeToken(authorization)
+      if (isValidToken) {
         next()
       }
     } catch (error) {
