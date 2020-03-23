@@ -20,7 +20,7 @@ module.exports = {
         return res.status(406).json({ message: 'There is no logs recorded' })
       }
 
-      return res.status(200).json({ Logs })
+      return res.status(200).json({ total: Logs.length, Logs })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
