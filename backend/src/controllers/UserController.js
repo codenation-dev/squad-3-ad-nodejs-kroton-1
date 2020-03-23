@@ -3,6 +3,7 @@ const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
 const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
 const { decodeToken } = require('../services/auth')
+const { updateByItem } = require('../utils/updateUserValidator')
 
 module.exports = {
 
@@ -67,8 +68,10 @@ module.exports = {
       const { body } = req
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
-
-      const dataToBeUpdated = []
+      const validation = (await schemaValidationForCheckPassword().isValid(body))
+      if (!validation) {
+        return res.status(406).json({ message: 'Data values are not valid' })
+      }
 
       const user = await User.findOne({
         where: { id }
@@ -76,86 +79,11 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ message: 'User not found' })
       }
-
-      const validation = (await schemaValidationForCheckPassword().isValid(body))
-      if (!validation) {
-        return res.status(406).json({ error: 'Data values are not valid' })
-      }
-
-      async function updateByItem(bodyItem, body, id) {
-
-        switch (bodyItem) {
-          case 'name,email,oldPassword,newPassword,confirmPassword':
-            if (!await compareHash(body.oldPassword, user.password)) {
-              return res.status(401).json({ error: 'Password does not match' })
-            }
-            await User.update({
-              name: body.name,
-              email: body.email,
-              password: await generateHashedPassword(body.newPassword)
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-
-          case 'name,email':
-            await User.update({
-              name: body.name,
-              email: body.email
-            }, {
-              where: { id }
-            })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-
-          case 'name,oldPassword,newPassword,confirmPassword':
-            if (!await compareHash(body.oldPassword, user.password)) {
-              return res.status(401).json({ error: 'Password does not match' })
-            }
-            await User.update({
-              name: body.name,
-              password: await generateHashedPassword(body.newPassword)
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-
-          case 'name':
-            await User.update({
-              name: body.name
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-
-          case 'email,oldPassword,newPassword,confirmPassword':
-            if (!await compareHash(body.oldPassword, user.password)) {
-              return res.status(401).json({ error: 'Password does not match' })
-            }
-            await User.update({
-              email: body.email,
-              password: await generateHashedPassword(body.newPassword)
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-          case 'email':
-            await User.update({
-              email: body.email
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-          case 'oldPassword,newPassword,confirmPassword':
-            if (!await compareHash(body.oldPassword, user.password)) {
-              return res.status(401).json({ error: 'Password does not match' })
-            }
-            await User.update({
-              password: await generateHashedPassword(body.newPassword)
-            }, { where: { id } })
-            return res.status(200).json({ message: 'Updated sucessfully!' })
-          default:
-            return res.status(406).json({ error: 'Data values are not valid' })
-        }
-      }
-
-      for (const obj in body) {
-        if (dataToBeUpdated.indexOf(obj) === -1) {
-          dataToBeUpdated.push(obj)
-        }
-      }
-      console.log(dataToBeUpdated)
-      updateByItem(dataToBeUpdated.join(), body, id)
+      
+      const responseOfUserValidator = await updateByItem(req.locals.join(), body, id, user)
+      res.status(responseOfUserValidator.status).json({ message: responseOfUserValidator.message })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },

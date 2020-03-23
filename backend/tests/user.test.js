@@ -214,7 +214,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     token.pop()
   })
 
-  test('return status code 200 and a message confirming (name, email, password)', async () => {
+  test.skip('return status code 200 and a message confirming (name, email, password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithValidData)
@@ -226,7 +226,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and a message confirming (name, email)', async () => {
+  test('return status code 200 and a message confirming (name, email)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithNameAndEmail)
@@ -238,7 +238,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and a message confirming (name, password)', async () => {
+  test('return status code 200 and a message confirming (name, password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithNameAndPassword)
@@ -250,7 +250,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and a message confirming (name)', async () => {
+  test('return status code 200 and a message confirming (name)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithJustName)
@@ -262,7 +262,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and a message confirming (email, password)', async () => {
+  test('return status code 200 and a message confirming (email, password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithEmailAndPassword)
@@ -274,7 +274,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and a message confirming (email)', async () => {
+  test('return status code 200 and a message confirming (email)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithJustEmail)
@@ -286,7 +286,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 200 and and a message confirming (password)', async () => {
+  test('return status code 200 and and a message confirming (password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userJustWithValidPassword)
@@ -298,34 +298,34 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     })
   })
 
-  test.skip('return status code 401 and error message', async () => {
+  test('return status code 401 and error message', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithInvalidOldPassword)
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(401)
-    expect(res.body).toEqual({ error: 'Password does not match' })
+    expect(res.body).toEqual({ message: 'Password does not match' })
   })
 
-  test.skip('return status code 406 with not confirmed password and error message', async () => {
+  test('return status code 406 with not confirmed password and error message', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithNotConfirmedPassword)
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Data values are not valid' })
+    expect(res.body).toEqual({ message: 'Data values are not valid' })
   })
 
-  test.skip('return status code 406 with a error message of body', async () => {
+  test('return status code 406 with a error message of body', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithInvalidBody)
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Data values are not valid' })
+    expect(res.body).toEqual({ message: 'Data values are not valid' })
   })
 
   test.skip('return status code 406 and error message when password is number', async () => {
@@ -335,7 +335,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Data values are not valid' })
+    expect(res.body).toEqual({ message: 'Data values are not valid' })
   })
 })
 
