@@ -56,7 +56,7 @@ module.exports = {
         next()
       }
     } catch (error) {
-      res.status(500).json({ error })
+      res.status(400).json({ error })
     }
   }
 }
