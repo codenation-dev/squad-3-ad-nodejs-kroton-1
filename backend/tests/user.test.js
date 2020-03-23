@@ -22,7 +22,7 @@ afterAll(async () => {
   await sequelize.close()
 })
 
-describe.skip('The API on /users/signup Endpoint at POST method should...', () => {
+describe('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
     await Log.drop()
     await User.drop()
@@ -131,7 +131,7 @@ describe.skip('The API on /users/signup Endpoint at POST method should...', () =
   })
 })
 
-describe.skip('The API on /users/signin Endpoint at POST method should...', () => {
+describe('The API on /users/signin Endpoint at POST method should...', () => {
   beforeEach(async () => {
     await request(app)
       .post('/users/signup')
@@ -190,7 +190,7 @@ describe.skip('The API on /users/signin Endpoint at POST method should...', () =
   })
 })
 
-describe.skip('The API on /users Endpoint at PATCH method should...', () => {
+describe('The API on /users Endpoint at PATCH method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app).post('/users/signup')
@@ -298,7 +298,7 @@ describe.skip('The API on /users Endpoint at PATCH method should...', () => {
   })
 })
 
-describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
+describe('The API on /users/logs Endpoint at GET method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app)
@@ -392,7 +392,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
   })
 })
 
-describe.skip('The API on /users Endpoint at DELETE method should...', () => {
+describe('The API on /users Endpoint at DELETE method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app).post('/users/signup')
@@ -546,6 +546,67 @@ describe('The API on /users/hard Endpoint at DELETE method should...', () => {
   })
 })
 
-describe.skip('The API on /users/restore Endpoint at POST method should...', () => {
+describe('The API on /users/restore Endpoint at POST method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
 
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.drop()
+    token.pop()
+
+    await sequelize.sync({ force: true })
+  })
+
+  test('return status code 200 and a message of successfully', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'User restored successfully.' })
+  })
+
+  test('return status code 400 and a message when user has deleted hard', async () => {
+    await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${token}`)
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'User not found' })
+  })
+
+  test('return status code 400 and a message of error when email is incorrect', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithInvalidEmail)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'User not found' })
+  })
+
+  test('return status code 400 and a message of error when password is incorrect', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithInvalidPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Incorrect password' })
+  })
 })

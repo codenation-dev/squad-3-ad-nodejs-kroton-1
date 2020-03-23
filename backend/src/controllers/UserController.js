@@ -194,15 +194,15 @@ module.exports = {
       },
       paranoid: false
     })
-    console.log(user, 'USER FIND ONDE CONTROLLER AQUI')
+
     if (!user) {
       return res.status(400).json({ message: 'User not found' })
     }
 
-    const restoredUser = await User.restore({
+    await User.restore({
       where: { id }
     })
 
-    return res.status(200).json({ data: restoredUser, message: 'User restored successfully.' })
+    return res.status(200).json({ message: 'User restored successfully.' })
   }
 }
