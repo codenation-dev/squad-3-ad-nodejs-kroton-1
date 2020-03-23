@@ -51,12 +51,10 @@ module.exports = {
         return res.status(401).json({ error: 'Token not provided' })
       }
 
-      const validatedToken = decodeToken(authorization)
-      if (validatedToken) {
-        next()
-      }
+      const isValidToken = decodeToken(authorization)
+      if (isValidToken) next()
     } catch (error) {
-      res.status(400).json({ error })
+      res.status(500).json({ error })
     }
   }
 }

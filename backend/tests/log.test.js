@@ -111,8 +111,8 @@ describe('The API on /logs endpoint at POST method should...', () => {
       .send(mockLogs.validLog)
       .set('Authorization', 'Bearer um.token.qualquer')
 
-    expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
     expect(res.statusCode).toEqual(500)
+    expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
   })
 })
 
@@ -199,7 +199,7 @@ describe('The API on logs/id/:id endpoint at DELETE method should...', () => {
     expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
   })
 
-  test('returns status code 401 and a message of error when token is missing', async () => {
+  test('returns status code 500 and a message of error when token is missing', async () => {
     const res = await request(app)
       .delete('/logs/id/1')
       .set('Authorization', 'Bearer')
@@ -256,7 +256,7 @@ describe('The API on logs/all endpoint at DELETE method should...', () => {
     expect(res.body).toMatchObject({ error: 'Token not provided' })
   })
 
-  test.only('returns status code 500 when token is invalid', async () => {
+  test('returns status code 500 when token is invalid', async () => {
     const res = await request(app)
       .delete('/logs/all')
       .set('Authorization', 'Bearer um.token.qualquer')
