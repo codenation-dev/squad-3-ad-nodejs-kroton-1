@@ -84,7 +84,6 @@ module.exports = {
 
       return res.status(200).json({ result })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -93,11 +92,11 @@ module.exports = {
     try {
       const { params: { id } } = req
 
-      const existLog = await Log.findOne({
+      const logExist = await Log.findOne({
         where: { id }
       })
 
-      if (!existLog) {
+      if (!logExist) {
         return res.status(406).json({ message: 'Log not existis.' })
       }
 
@@ -105,9 +104,8 @@ module.exports = {
         where: { id }
       })
 
-      return res.status(200).json({ msg: 'Deleted successfully' })
+      return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },

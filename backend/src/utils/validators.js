@@ -36,7 +36,8 @@ module.exports = {
       environment: yup.string().required()
     })
 
-    if (!(await schema.isValid(logData))) {
+    const isSchemaValid = await schema.isValid(logData)
+    if (!isSchemaValid) {
       return false
     }
     return schema

@@ -10,48 +10,48 @@ const authorization = []
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor () {
+  constructor() {
     return constantDate
   }
 }
 
 // ----- Funções usadas por todos os testes
-async function signUp (user) {
+async function signUp(user) {
   await request(app)
     .post('/users/signup')
     .send(user)
 }
 
-async function signIn (user) {
+async function signIn(user) {
   const { body: { token } } = await request(app)
     .post('/users/signin')
     .send(user)
   authorization.push(token)
 }
 
-async function createLog (log) {
+async function createLog(log) {
   return request(app)
     .post('/logs').send(log)
     .set('Authorization', `Bearer ${authorization[0]}`)
 }
 
-async function cleanDB () {
+async function cleanDB() {
   await sequelize.sync({ force: true })
   authorization.pop()
 }
 
 // ----- all
 beforeAll(async () => {
-  await sequelize
-    .sync({ force: true })
+  await sequelize.sync({ force: true })
 })
+
 afterAll(async () => {
   await sequelize.drop()
   await sequelize.close()
 })
 
 // ----- Inicio dos testes
-describe('The API on /logs endpoint at POST method should...', () => {
+describe.skip('The API on /logs endpoint at POST method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -101,10 +101,7 @@ describe('The API on /logs endpoint at POST method should...', () => {
       .set('Authorization', 'Bearer')
 
     expect(res.body).toMatchObject({
-      error: {
-        message: 'jwt must be provided',
-        name: 'JsonWebTokenError'
-      }
+      error: { message: 'jwt must be provided', name: 'JsonWebTokenError' }
     })
     expect(res.statusCode).toEqual(500)
   })
@@ -113,16 +110,13 @@ describe('The API on /logs endpoint at POST method should...', () => {
     const res = await request(app).post('/logs')
       .send(mockLogs.validLog)
       .set('Authorization', 'Bearer um.token.qualquer')
-    expect(res.body).toMatchObject({
-      error: {
-        message: 'invalid token'
-      }
-    })
+
+    expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
     expect(res.statusCode).toEqual(500)
   })
 })
 
-describe('The API on logs/sender endpoint at GET method should...', () => {
+describe.skip('The API on logs/sender endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -144,7 +138,7 @@ describe('The API on logs/sender endpoint at GET method should...', () => {
     expect(res.statusCode).toEqual(200)
   })
 
-  test('returns status code 406 and a message of error when the id nonexist', async () => {
+  test('returns status code 406 and a message of error when id nonexist', async () => {
     const res = await request(app)
       .get('/logs/sender/1')
       .send(mockLogs.getLogBySenderApp)
@@ -155,5 +149,53 @@ describe('The API on logs/sender endpoint at GET method should...', () => {
       error: 'Nonexistent id'
     })
     expect(res.statusCode).toEqual(406)
+  })
+})
+
+describe('The API on logs/:id endpoint at DELETE method should...', () => {
+  beforeEach(async () => {
+    await signUp(userSignup)
+    await signIn(userSignin)
+    await createLog(mockLogs.validLog)
+  })
+
+  afterEach(async () => {
+    await cleanDB()
+  })
+
+  test('returns status code 200 and a successfull message', async () => {
+    const res = await request(app)
+      .delete('/logs/1')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject({ message: 'Deleted successfully' })
+  })
+
+  test('returns status code 406 and a message when the log does not exist', async () => {
+    const res = await request(app)
+      .delete('/logs/90')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toMatchObject({ message: 'Log not existis.' })
+  })
+
+  test('returns status code 500 and a message of error when token is invalid', async () => {
+    const res = await request(app)
+      .delete('/logs/1')
+      .set('Authorization', 'Bearer um.token.qualquer')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toMatchObject({ error: { message: 'invalid token' } })
+  })
+
+  test('returns status code 401 and a message of error when token is missing', async () => {
+    const res = await request(app)
+      .delete('/logs/1')
+      .set('Authorization', 'Bearer')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
   })
 })
