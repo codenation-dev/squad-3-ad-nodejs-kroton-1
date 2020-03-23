@@ -25,10 +25,9 @@ afterAll(async () => {
 describe.skip('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
     await Log.drop()
-    await User.destroy({
-      truncate: true,
-      force: true
-    })
+    await User.drop()
+
+    await sequelize.sync({ force: true })
   })
 
   test('return status code 201, the new data created and a message of sucess', async () => {
@@ -141,10 +140,9 @@ describe.skip('The API on /users/signin Endpoint at POST method should...', () =
 
   afterEach(async () => {
     await Log.drop()
-    await User.destroy({
-      truncate: true,
-      force: true
-    })
+    await User.drop()
+
+    await sequelize.sync({ force: true })
   })
 
   test('return status code 200 and an object with the token', async () => {
@@ -207,11 +205,10 @@ describe.skip('The API on /users Endpoint at PATCH method should...', () => {
 
   afterEach(async () => {
     await Log.drop()
-    await User.destroy({
-      truncate: true,
-      force: true
-    })
+    await User.drop()
     token.pop()
+
+    await sequelize.sync({ force: true })
   })
 
   test('return status code 200 and name and email updated', async () => {
@@ -323,10 +320,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
 
   afterEach(async () => {
     await Log.drop()
-    await User.destroy({
-      truncate: true,
-      force: true
-    })
+    await User.drop()
     token.pop()
 
     await sequelize.sync({ force: true })
@@ -368,7 +362,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
     expect(res.body).toEqual({ message: 'There is no logs recorded' })
   })
 
-  test('return status when token not provided', async () => {
+  test('return status when token is incorrect', async () => {
     const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
     const res = await request(app)
       .get('/users/logs')
@@ -383,7 +377,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
     })
   })
 
-  test('return status when token is incorrect', async () => {
+  test('return status when token not provided', async () => {
     const res = await request(app)
       .get('/users/logs')
       .set('Authorization', 'Bearer ')
@@ -396,11 +390,9 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
       }
     })
   })
-
-  // deletar depois de ja ter deletado com o mesmo token
 })
 
-describe.skip('The API on /users Endpoint at DELETE method should...', () => {
+describe('The API on /users Endpoint at DELETE method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app).post('/users/signup')
@@ -415,11 +407,60 @@ describe.skip('The API on /users Endpoint at DELETE method should...', () => {
 
   afterEach(async () => {
     await Log.drop()
-    await User.destroy({
-      truncate: true,
-      force: true
-    })
+    await User.drop()
     token.pop()
+
+    await sequelize.sync({ force: true })
+  })
+
+  test('return status code 200 and a message od deletation', async () => {
+    const res = await request(app)
+      .delete('/users')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'User deleted succesfully' })
+  })
+
+  test('return status 406 and a message when user not found or has already been deleted', async () => {
+    await request(app)
+      .delete('/users')
+      .set('Authorization', `Bearer ${token}`)
+    const res = await request(app)
+      .delete('/users')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ message: 'User not found!' })
+  })
+
+  test('return status when token is incorrect', async () => {
+    const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+    const res = await request(app)
+      .delete('/users')
+      .set('Authorization', `Bearer ${incorrectToken}`)
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'invalid signature',
+        name: 'JsonWebTokenError'
+      }
+    })
+  })
+
+  test('return status 500 when token not provided', async () => {
+    const res = await request(app)
+      .delete('/users')
+      .set('Authorization', 'Bearer ')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'jwt must be provided',
+        name: 'JsonWebTokenError'
+      }
+    })
   })
 })
 
@@ -427,6 +468,6 @@ describe.skip('The API on /users/hard Endpoint at DELETE method should...', () =
 
 })
 
-describe('The API on /users/restore Endpoint at POST method should...', () => {
+describe.skip('The API on /users/restore Endpoint at POST method should...', () => {
 
 })
