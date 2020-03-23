@@ -181,6 +181,15 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
     expect(res.body).toMatchObject({ message: 'Log not existis.' })
   })
 
+  test('returns status code 404 and an empty obj when log id is missing', async () => {
+    const res = await request(app)
+      .delete('/logs/')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toMatchObject({})
+  })
+
   test('returns status code 500 and a message of error when token is invalid', async () => {
     const res = await request(app)
       .delete('/logs/1')
@@ -198,4 +207,31 @@ describe('The API on logs/:id endpoint at DELETE method should...', () => {
     expect(res.statusCode).toEqual(500)
     expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
   })
+})
+
+describe.skip('The API on logs/all endpoint at DELETE method should...', () => {
+  beforeEach(async () => {
+    await signUp(userSignup)
+    await signIn(userSignin)
+    await createLog(mockLogs.validLog)
+  })
+
+  afterEach(async () => {
+    await cleanDB()
+  })
+
+  test('returns status code 200 and a successfull message', async () => {
+    console.log('**token: ', authorization[0])
+
+    const res = await request(app)
+      .delete('/logs/all')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    //expect(res.statusCode).toEqual(200)
+    expect(res.body).toMatchObject({ message: 'Deleted successfully' })
+  })
+
+  // test('', async () => {
+
+  // })
 })
