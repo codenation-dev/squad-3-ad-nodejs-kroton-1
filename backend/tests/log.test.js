@@ -51,7 +51,7 @@ afterAll(async () => {
 })
 
 // ----- Inicio dos testes
-describe('The API on /logs/sender endpoint at GET method should...', () => {
+describe('The API on /logs/sender/:senderApplication endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
