@@ -68,6 +68,14 @@ module.exports = {
       const { body } = req
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
+
+      const dataToBeUpdated = []
+      for (const obj in body) {
+        if (dataToBeUpdated.indexOf(obj) === -1) {
+          dataToBeUpdated.push(obj)
+        }
+      }
+
       const validation = (await schemaValidationForCheckPassword().isValid(body))
       if (!validation) {
         return res.status(406).json({ message: 'Data values are not valid' })
@@ -79,8 +87,15 @@ module.exports = {
       if (!user) {
         return res.status(400).json({ message: 'User not found' })
       }
-      
-      const responseOfUserValidator = await updateByItem(req.locals.join(), body, id, user)
+
+      if (dataToBeUpdated.indexOf('oldPassword') !== -1) {
+        if (!await compareHash(body.oldPassword, user.password)) {
+          return res.status(401).json({ message: 'Password does not match' })
+        }
+        body.password = await generateHashedPassword(body.newPassword)
+      }
+
+      const responseOfUserValidator = await updateByItem(dataToBeUpdated.join(), body, id, user)
       res.status(responseOfUserValidator.status).json({ message: responseOfUserValidator.message })
     } catch (error) {
       console.log(error)

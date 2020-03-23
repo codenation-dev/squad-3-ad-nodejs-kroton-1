@@ -121,7 +121,7 @@ const userPossibilitiesForUpdate = {
   },
 
   userWithInvalidOldPassword: {
-    oldPassword: '12345678',
+    oldPassword: '123456789',
     newPassword: '12345678',
     confirmPassword: '12345678'
   },
