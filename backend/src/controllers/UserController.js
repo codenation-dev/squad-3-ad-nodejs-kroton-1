@@ -9,20 +9,20 @@ module.exports = {
 
   getAllLogsFromUser: async (req, res) => {
     try {
-      const id = req.locals
+      const { locals: id } = req
       const { dataValues: { Logs } } = await User.findOne({
         where: { id },
         include: Log
       })
 
       if (Logs.length === 0) {
-        return res.status(406).json({ message: 'There is no logs recorded' })
+        return res.status(406).json({ message: 'There are no logs' })
       }
 
       return res.status(200).json({ total: Logs.length, Logs })
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
@@ -37,7 +37,7 @@ module.exports = {
       }))
 
       if (!validation) {
-        return res.status(406).json({ error: 'Data values are not valid' })
+        return res.status(406).json({ message: 'Invalid data' })
       }
 
       const existsEmail = await User.findOne({
@@ -62,13 +62,11 @@ module.exports = {
           data: { userName, userEmail, createdAt }
         })
       } else {
-        return res.status(400).json({
-          message: 'Password cannot be a number'
-        })
+        return res.status(406).json({ message: 'Invalid data' })
       }
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
@@ -87,14 +85,14 @@ module.exports = {
 
       const validation = (await schemaValidationForUpdateUser().isValid(body))
       if (!validation) {
-        return res.status(406).json({ message: 'Data values are not valid' })
+        return res.status(406).json({ message: 'Invalid data' })
       }
 
       const user = await User.findOne({
         where: { id }
       })
       if (!user) {
-        return res.status(400).json({ message: 'User not found' })
+        return res.status(204).json({ message: 'There is no user' })
       }
 
       if (dataToBeUpdated.indexOf('oldPassword') !== -1) {
@@ -107,30 +105,29 @@ module.exports = {
         if (typeof hashedPassword === 'string') {
           body.password = hashedPassword
         } else {
-          return res.status(400).json({
-            message: 'Password cannot be a number'
-          })
+          return res.status(406).json({ message: 'Invalid data' })
         }
       }
 
       const { status, message } = await updateByItem(dataToBeUpdated.join(), body, id)
+
       res.status(status).json({ message: message })
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   delete: async (req, res) => {
     try {
-      const id = req.locals
+      const { locals: { id } } = req
 
       const userExists = await User.findOne({
         where: { id }
       })
 
       if (!userExists) {
-        return res.status(406).json({ message: 'User not found!' })
+        return res.status(204).json({ message: 'There is no user' })
       }
 
       await Log.destroy({
@@ -141,23 +138,23 @@ module.exports = {
         where: { id }
       })
 
-      return res.status(200).json({ message: 'User deleted succesfully' })
+      return res.status(200).json({ message: 'Deleted succesfully' })
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   hardDelete: async (req, res) => {
     try {
-      const id = req.locals
+      const { locals: { id } } = req
 
       const userExists = await User.findOne({
         where: { id }
       })
 
       if (!userExists) {
-        return res.status(406).json({ message: 'User not found!' })
+        return res.status(204).json({ message: 'There is no user' })
       }
 
       await Log.destroy({
@@ -171,10 +168,10 @@ module.exports = {
         force: true
       })
 
-      return res.status(200).json({ message: 'User deleted forever, this cannot be undone.' })
+      return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
@@ -190,7 +187,7 @@ module.exports = {
     })
 
     if (!user) {
-      return res.status(400).json({ message: 'User not found' })
+      return res.status(204).json({ message: 'There is no user' })
     }
 
     await User.restore({
