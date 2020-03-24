@@ -279,7 +279,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
+      message: 'Updated sucessfully!'
     })
   })
 
@@ -291,7 +291,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
+      message: 'Updated sucessfully!'
     })
   })
 
@@ -322,21 +322,21 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ "message": "Data values are not valid for body" })
+    expect(res.body).toEqual({ message: 'Data values are not valid for body' })
   })
 
-  test.skip('return status code 406 and error message when password is number', async () => {
+  test('return status code 406 and error message when password is number', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithTypeNumberNewPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ message: 'Data values are not valid' })
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'Password cannot be a number' })
   })
 })
 
-describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
+describe('The API on /users/logs Endpoint at GET method should...', () => {
   const token = []
   beforeEach(async (done) => {
     await request(app)

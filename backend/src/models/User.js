@@ -4,7 +4,7 @@ module.exports = (sequelize, Sequelize) =>
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
-        notNull: { msg: 'You must enter a name' }
+        notNull: { msg: 'Password cannot be null' }
       }
     },
     email: {
@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) =>
       allowNull: false,
       unique: true,
       validate: {
-        notNull: { msg: 'You must enter a email' }
+        notNull: { msg: 'Password cannot be null' }
       }
     },
     password: {
@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) =>
       allowNull: false,
       unique: true,
       validate: {
-        notNull: { msg: 'You must enter a password' }
+        notNull: { msg: 'Password cannot be null' }
       }
     }
   },

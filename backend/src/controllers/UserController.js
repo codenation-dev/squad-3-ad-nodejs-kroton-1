@@ -48,13 +48,24 @@ module.exports = {
         return res.status(409).json({ message: 'User email already exists.' })
       }
 
-      const { dataValues: { name: userName, email: userEmail, createdAt } } = await User.create({
-        name,
-        email,
-        password: await generateHashedPassword(password)
-      })
+      const hashedPassword = await generateHashedPassword(password)
 
-      return res.status(201).json({ message: 'User created successfully!', data: { userName, userEmail, createdAt } })
+      if (typeof hashedPassword === 'string') {
+        const { dataValues: { name: userName, email: userEmail, createdAt } } = await User.create({
+          name,
+          email,
+          password: hashedPassword
+        })
+
+        return res.status(201).json({
+          message: 'User created successfully!',
+          data: { userName, userEmail, createdAt }
+        })
+      } else {
+        return res.status(400).json({
+          message: 'Password cannot be a number'
+        })
+      }
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -90,7 +101,16 @@ module.exports = {
         if (!await compareHash(body.oldPassword, user.password)) {
           return res.status(401).json({ message: 'Password does not match' })
         }
-        body.password = await generateHashedPassword(body.newPassword)
+
+        const hashedPassword = await generateHashedPassword(body.newPassword)
+
+        if (typeof hashedPassword === 'string') {
+          body.password = hashedPassword
+        } else {
+          return res.status(400).json({
+            message: 'Password cannot be a number'
+          })
+        }
       }
 
       const responseOfUserValidator = await updateByItem(dataToBeUpdated.join(), body, id, user)
