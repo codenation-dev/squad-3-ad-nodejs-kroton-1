@@ -62,7 +62,7 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const { body } = req
       const isValidSchemaLog = await schemaValidationForLogs(body)
 
@@ -70,12 +70,12 @@ module.exports = {
         return res.status(406).json({ message: 'Log body is not valid' })
       }
 
-      const result = await Log.create({
+      const createdLog = await Log.create({
         ...body,
-        UserId
+        UserId: id
       })
 
-      return res.status(200).json({ result })
+      return res.status(200).json({ createdLog })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
