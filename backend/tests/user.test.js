@@ -389,7 +389,7 @@ describe.skip('The API on /users/logs Endpoint at GET method should...', () => {
 
   test('return status 406 and a message when there is no log', async () => {
     await request(app)
-      .delete('/logs/1')
+      .delete('/logs/id/1')
       .set('Authorization', `Bearer ${token}`)
 
     const res = await request(app)

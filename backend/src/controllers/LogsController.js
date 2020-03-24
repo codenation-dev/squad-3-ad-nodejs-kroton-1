@@ -1,14 +1,14 @@
 const { Log } = require('../models')
-const { decodeToken } = require('../services/auth')
 const { schemaValidationForLogs } = require('../utils/validators')
 
 module.exports = {
 
   getBySender: async (req, res) => {
     try {
+      const UserId = req.locals
       const { params: { senderApplication } } = req
       const logs = await Log.findAll({
-        where: { senderApplication }
+        where: { UserId, senderApplication }
       })
 
       if (logs.length === 0) {
@@ -27,12 +27,10 @@ module.exports = {
 
   getByEnvironment: async (req, res) => {
     try {
+      const UserId = req.locals
       const { params: { environment } } = req
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
-
       const logs = await Log.findAll({
-        where: { UserId: id, environment }
+        where: { UserId, environment }
       })
 
       if (logs.length === 0) {
@@ -48,11 +46,10 @@ module.exports = {
 
   getByLevel: async (req, res) => {
     try {
+      const UserId = req.locals
       const { params: { level } } = req
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
       const logs = await Log.findAll({
-        where: { UserId: id, level }
+        where: { UserId, level }
       })
 
       if (logs.length === 0) {
@@ -68,10 +65,8 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { authorization } = req.headers
+      const UserId = req.locals
       const logData = req.body
-      const { userId: { id } } = decodeToken(authorization)
-
       const validatedModelLog = await schemaValidationForLogs(logData)
 
       if (!validatedModelLog) {
@@ -80,21 +75,23 @@ module.exports = {
 
       const result = await Log.create({
         ...logData,
-        UserId: id
+        UserId
       })
 
       return res.status(200).json({ result })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   deleteByLogId: async (req, res) => {
     try {
+      const UserId = req.locals
       const { params: { id } } = req
 
       const logExist = await Log.findOne({
-        where: { id }
+        where: { UserId, id }
       })
 
       if (!logExist) {
@@ -107,6 +104,7 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -137,11 +135,9 @@ module.exports = {
 
   deleteAllLogsByUser: async (req, res) => {
     try {
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
-
+      const UserId = req.locals
       const logs = await Log.findAll({
-        where: { UserId: id }
+        where: { UserId }
       })
 
       if (logs.length === 0) {
@@ -149,11 +145,12 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { UserId: id }
+        where: { UserId }
       })
 
       return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },

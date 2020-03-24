@@ -2,16 +2,14 @@ const { User } = require('../models')
 const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
 const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
-const { decodeToken } = require('../services/auth')
+const { decodeToken } = require('../utils/auth')
 const { updateByItem } = require('../utils/updateUserValidator')
 
 module.exports = {
 
   getAllLogsFromUser: async (req, res) => {
     try {
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
-
+      const id = req.locals
       const { dataValues: { Logs } } = await User.findOne({
         where: { id },
         include: Log
@@ -105,8 +103,7 @@ module.exports = {
 
   delete: async (req, res) => {
     try {
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
+      const id = req.locals
 
       const userExists = await User.findOne({
         where: { id }
@@ -133,8 +130,7 @@ module.exports = {
 
   hardDelete: async (req, res) => {
     try {
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
+      const id = req.locals
 
       const userExists = await User.findOne({
         where: { id }

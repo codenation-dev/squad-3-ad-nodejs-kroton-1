@@ -1,5 +1,5 @@
 const { User } = require('../models')
-const { generateToken, decodeToken } = require('../services/auth')
+const { generateToken, decodeToken } = require('../utils/auth')
 const { compareHash } = require('../utils/hashing')
 const { schemaValidationForAuthenticate } = require('../utils/validators')
 
@@ -85,34 +85,51 @@ module.exports = {
     }
   },
 
-  authorizeForRestoreUser: async (req, res, next) => {
+  authorizeForRestoreUser: (req, res, next) => {
     try {
       const { locals: { token } } = req
       if (!token) {
         return res.status(401).json({ error: 'Token not provided' })
       }
 
-      const validatedToken = await decodeToken(token)
+      const validatedToken = decodeToken(token)
       if (validatedToken) {
         next()
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error })
     }
   },
 
-  authorize: async (req, res, next) => {
+  authorize: (req, res, next) => {
     try {
       const { authorization } = req.headers
 
       if (!authorization) {
         return res.status(401).json({ error: 'Token not provided' })
       }
-      const isValidToken = await decodeToken(authorization)
+      const isValidToken = decodeToken(authorization)
       if (isValidToken) {
         next()
       }
     } catch (error) {
+      console.log(error)
+      res.status(500).json({ error })
+    }
+  },
+  getIdByToken: (req, res, next) => {
+    try {
+      const { authorization } = req.headers
+      if (!authorization) {
+        res.status(406).json({ error: 'Token not provided' })
+      } else {
+        const { userId: { id } } = decodeToken(authorization)
+        req.locals = id
+        next()
+      }
+    } catch (error) {
+      console.log(error)
       res.status(500).json({ error })
     }
   }
