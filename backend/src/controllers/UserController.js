@@ -3,6 +3,7 @@ const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
 const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
 const { decodeToken } = require('../services/auth')
+const { updateByItem } = require('../utils/updateUserValidator')
 
 module.exports = {
 
@@ -64,63 +65,40 @@ module.exports = {
 
   update: async (req, res) => {
     try {
-      const { body: { name, email, oldPassword, newPassword, confirmPassword } } = req
-
+      const { body } = req
       const { authorization } = req.headers
       const { userId: { id } } = decodeToken(authorization)
 
-      const validation = (await schemaValidationForCheckPassword().isValid({
-        name,
-        email,
-        oldPassword,
-        newPassword,
-        confirmPassword
-      }))
+      const dataToBeUpdated = []
+      for (const obj in body) {
+        if (dataToBeUpdated.indexOf(obj) === -1) {
+          dataToBeUpdated.push(obj)
+        }
+      }
 
+      const validation = (await schemaValidationForCheckPassword().isValid(body))
       if (!validation) {
-        return res.status(406).json({ error: 'Data values are not valid' })
+        return res.status(406).json({ message: 'Data values are not valid' })
       }
 
       const user = await User.findOne({
         where: { id }
       })
-
       if (!user) {
         return res.status(400).json({ message: 'User not found' })
       }
 
-      const passwordMatch = await compareHash(oldPassword, user.password)
-      if (oldPassword && !passwordMatch) {
-        return res.status(401).json({ error: 'Password does not match' })
+      if (dataToBeUpdated.indexOf('oldPassword') !== -1) {
+        if (!await compareHash(body.oldPassword, user.password)) {
+          return res.status(401).json({ message: 'Password does not match' })
+        }
+        body.password = await generateHashedPassword(body.newPassword)
       }
 
-      if (newPassword !== undefined) {
-        await User.update({
-          name,
-          email,
-          password: await generateHashedPassword(newPassword)
-        }, {
-          where: { id },
-          returning: true,
-          plain: true
-        })
-
-        const { dataValues: { name: updatedName, email: updatedEmail } } = await User.findOne({
-          where: { id }
-        })
-        return res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
-      }
-
-      await User.update({ name, email }, {
-        where: { id }
-      })
-
-      const { dataValues: { name: updatedName, email: updatedEmail } } = await User.findOne({
-        where: { id }
-      })
-
-      return res.status(200).json({ updatedName, updatedEmail, message: 'Updated sucessfully!' })
+      const responseOfUserValidator = await updateByItem(dataToBeUpdated.join(), body, id, user)
+      res.status(responseOfUserValidator.status).json({ message: responseOfUserValidator.message })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
