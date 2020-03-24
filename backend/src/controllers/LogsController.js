@@ -109,6 +109,30 @@ module.exports = {
     }
   },
 
+  hardDeleteById: async (req, res) => {
+    try {
+      const { params: { id } } = req
+
+      const logExist = await Log.findOne({
+        where: { id }
+      })
+
+      if (!logExist) {
+        return res.status(406).json({ message: 'Log not existis.' })
+      }
+
+      await Log.destroy({
+        where: { id },
+        force: true
+      })
+
+      return res.status(200).json({ message: 'Log deleted forever, this cannot be undone.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
   deleteAllLogsByUser: async (req, res) => {
     try {
       const UserId = req.locals
@@ -129,5 +153,68 @@ module.exports = {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
+  },
+
+  hardDeleteAll: async (req, res) => {
+    try {
+      const { authorization } = req.headers
+      const { userId: { id } } = decodeToken(authorization)
+
+      const logs = await Log.findAll({
+        where: { UserId: id }
+      })
+
+      if (logs.length === 0) {
+        return res.status(406).json({ message: 'There is no logs to delete' })
+      }
+
+      await Log.destroy({
+        where: { UserId: id },
+        force: true
+      })
+      return res.status(200).json({ message: 'All logs deleted forever, this cannot be undone.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
+  restoreLogById: async (req, res) => {
+    const { params: { id } } = req
+    console.log(id, 'ID AQUIIIIIIIIIIIIIIIIIIII')
+    const logs = await Log.findOne({
+      where: {
+        id
+      },
+      paranoid: false
+    })
+
+    if (!logs) {
+      return res.status(400).json({ message: 'There is no logs to restore' })
+    }
+
+    await Log.restore()
+
+    return res.status(200).json({ message: 'All logs restored successfully.' })
+  },
+
+  restoreAllLogs: async (req, res) => {
+    const { authorization } = req.headers
+    const { userId: { id } } = decodeToken(authorization)
+
+    const logs = await Log.findAll({
+      where: { UserId: id },
+      paranoid: false
+    })
+
+    if (logs.length === 0) {
+      return res.status(400).json({ message: 'There is no logs to restore' })
+    }
+
+    await Log.restore({
+      where: { UserId: id }
+    })
+
+    return res.status(200).json({ message: 'All logs restored successfully.' })
   }
 }

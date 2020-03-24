@@ -10,9 +10,7 @@ module.exports = {
       if (Object.keys(req.body).length > 2) {
         return res.status(406).json({ message: 'You are input wrong data then necessary' })
       }
-
       const { body: { email, password } } = req
-
       const isValid = (await schemaValidationForAuthenticate()).isValid({
         email,
         password
