@@ -80,13 +80,21 @@ describe('The API on /logs/sender/:senderApplication endpoint at GET method shou
     expect(res.body).toEqual({ message: 'There are no logs' })
   })
 
-  test.only('returns status code 401 and a message of error when token is missing', async () => {
+  test('returns status code 401 and a message of error when token is invalid', async () => {
     const res = await request(app)
       .get('/logs/environment/production')
       .set('Authorization', 'Bearer')
 
-    //expect(res.statusCode).toEqual(401)
-    expect(res.body).toMatchObject({ error: { message: 'qualquer coisa' } })
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toMatchObject({ message: 'Invalid token' })
+  })
+
+  test('returns status code 401 and a message of error when token is missing', async () => {
+    const res = await request(app)
+      .get('/logs/environment/production')
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toMatchObject({ message: 'Token not provided' })
   })
 })
 
