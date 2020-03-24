@@ -7,7 +7,7 @@ const { updateByItem } = require('../utils/updateUserValidator')
 
 module.exports = {
 
-  getAllLogsFromUser: async (req, res) => {
+  getAllLogs: async (req, res) => {
     try {
       const { locals: id } = req
       const { dataValues: { Logs } } = await User.findOne({
@@ -175,7 +175,7 @@ module.exports = {
     }
   },
 
-  restoreUser: async (req, res) => {
+  restore: async (req, res) => {
     const { locals: { token } } = req
     const { userId: { id } } = decodeToken(token)
 
