@@ -8,7 +8,16 @@ module.exports = {
     return token
   },
   decodeToken: (token) => {
-    const [, tokenSplited] = token.split(' ')
-    return jwt.verify(tokenSplited, process.env.SECRET)
+    try {
+      const [bearer, tokenSplited] = token.split(' ')
+      console.log('**', bearer, tokenSplited)
+      if (!bearer || !tokenSplited) {
+        return { status: 401, message: 'Invalid token' }
+      }
+      return jwt.verify(tokenSplited, process.env.SECRET)
+    } catch (error) {
+      console.log(error)
+      return { status: 500, message: 'Internal Server Error' }
+    }
   }
 }
