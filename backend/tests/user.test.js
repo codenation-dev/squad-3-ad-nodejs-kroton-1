@@ -211,7 +211,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
     await sequelize.sync({ force: true })
   })
 
-  test('return status code 200 and name and email updated', async () => {
+  test('return status code 200 and a message confirming (name, email, password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithValidData)
@@ -219,41 +219,71 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
-      updatedEmail: 'raulzito123@gmail.com',
-      updatedName: 'New Raul Seixas'
+      message: 'Updated sucessfully!'
     })
   })
 
-  test.skip('return status code 200 and the name updated', async () => {
+  test('return status code 200 and a message confirming (name, email)', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithNameAndEmail)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!'
+    })
+  })
+
+  test('return status code 200 and a message confirming (name, password)', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithNameAndPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!'
+    })
+  })
+
+  test('return status code 200 and a message confirming (name)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithJustName)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
-      updatedEmail: 'raulzito@gmail.com',
-      updatedName: 'New Raul Seixas'
+      message: 'Updated sucessfully!'
     })
   })
 
-  test.skip('return status code 200 and the email updated', async () => {
+  test('return status code 200 and a message confirming (email, password)', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithEmailAndPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      message: 'Updated sucessfully!'
+    })
+  })
+
+  test('return status code 200 and a message confirming (email)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithJustEmail)
       .set('Authorization', `Bearer ${token}`)
 
-    // expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
-      updatedEmail: 'raulzito123@gmail.com',
-      updatedName: 'Raul Seixas'
+      message: 'Updated sucessfully!'
     })
   })
 
-  test('return status code 200 and the same name and email', async () => {
+  test('return status code 200 and and a message confirming (password)', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userJustWithValidPassword)
@@ -261,9 +291,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
 
     expect(res.statusCode).toEqual(200)
     expect(res.body).toEqual({
-      message: 'Updated sucessfully!',
-      updatedEmail: 'raulzito@gmail.com',
-      updatedName: 'Raul Seixas'
+      message: 'Updated sucessfully!'
     })
   })
 
@@ -274,7 +302,7 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(401)
-    expect(res.body).toEqual({ error: 'Password does not match' })
+    expect(res.body).toEqual({ message: 'Password does not match' })
   })
 
   test('return status code 406 with not confirmed password and error message', async () => {
@@ -284,17 +312,27 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Data values are not valid' })
+    expect(res.body).toEqual({ message: 'Data values are not valid' })
   })
 
-  test.skip('return status code 406 and error message when password is number', async () => {
+  test('return status code 406 with a error message of body', async () => {
+    const res = await request(app)
+      .patch('/users')
+      .send(userPossibilitiesForUpdate.userWithInvalidBody)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toEqual({ message: 'Data values are not valid for body' })
+  })
+
+  test('return status code 406 and error message when password is number', async () => {
     const res = await request(app)
       .patch('/users')
       .send(userPossibilitiesForUpdate.userWithTypeNumberNewPassword)
       .set('Authorization', `Bearer ${token}`)
 
-    expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ error: 'Data values are not valid' })
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'Password cannot be a number' })
   })
 })
 
@@ -351,7 +389,7 @@ describe('The API on /users/logs Endpoint at GET method should...', () => {
 
   test('return status 406 and a message when there is no log', async () => {
     await request(app)
-      .delete('/logs/1')
+      .delete('/logs/id/1')
       .set('Authorization', `Bearer ${token}`)
 
     const res = await request(app)
