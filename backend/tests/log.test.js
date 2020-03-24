@@ -35,7 +35,6 @@ async function createLog (log) {
     .set('Authorization', `Bearer ${authorization[0]}`)
 }
 
-
 async function syncDB () {
   await sequelize.sync({ force: true })
   authorization.pop()
@@ -311,7 +310,7 @@ describe('The API on /logs/restore Endpoint at POST method should...', () => {
   })
 
   afterEach(async () => {
-    await cleanDB()
+    await syncDB()
   })
 
   test('return status code 200 and a message of successfully', async () => {
@@ -376,7 +375,7 @@ describe('The API on /logs/restore/:id Endpoint at POST method should...', () =>
   })
 
   afterEach(async () => {
-    await cleanDB()
+    await syncDB()
   })
 
   test('return status code 200 and a message of successfully', async () => {
@@ -573,7 +572,7 @@ describe('The API on /logs/hard/:id endpoint at DELETE method should...', () => 
   })
 
   afterEach(async () => {
-    await cleanDB()
+    await syncDB()
   })
 
   test('returns status code 200 and a successfull message', async () => {
@@ -641,7 +640,7 @@ describe('The API on /logs/all/hard endpoint at DELETE method should...', () => 
   })
 
   afterEach(async () => {
-    await cleanDB()
+    await syncDB()
   })
 
   test('returns status code 200 and a successfull message', async () => {
@@ -673,11 +672,11 @@ describe('The API on /logs/all/hard endpoint at DELETE method should...', () => 
     expect(res.body).toMatchObject({ error: { message: 'jwt must be provided' } })
   })
 
-  test('returns status code 401 when token is not provided', async () => {
+  test('returns status code 406 when token is not provided', async () => {
     const res = await request(app)
       .delete('/logs/all/hard')
 
-    expect(res.statusCode).toEqual(401)
+    expect(res.statusCode).toEqual(406)
     expect(res.body).toMatchObject({ error: 'Token not provided' })
   })
 
