@@ -53,7 +53,7 @@ module.exports = {
         return { status: 200, message: 'Updated sucessfully!' }
 
       default:
-        return { status: 406, message: 'Data values are not valid for body' }
+        return { status: 406, message: 'Invalid data' }
     }
   }
 }

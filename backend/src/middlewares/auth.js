@@ -16,7 +16,7 @@ module.exports = {
         password
       })
 
-      if (!isValid) {
+      if (!isValid || typeof email !== 'string' || typeof password !== 'string') {
         return res.status(406).json({ error: 'Data values are not valid' })
       }
 
@@ -129,6 +129,7 @@ module.exports = {
         return res.status(401).json({ message: 'Invalid token' })
       } else {
         const { userId: { id } } = decodeToken(authorization)
+
         req.locals = id
         next()
       }
