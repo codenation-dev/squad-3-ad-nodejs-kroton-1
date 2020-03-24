@@ -5,14 +5,15 @@ module.exports = {
 
   getBySender: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const { params: { senderApplication } } = req
       const logs = await Log.findAll({
-        where: { UserId, senderApplication }
+        where: { UserId: id, senderApplication }
       })
 
-      if (logs.length === 0) {
-        return res.status(204).json({ message: 'there is no logs' })
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
       }
 
       return res.status(200).json(logs)
@@ -26,12 +27,14 @@ module.exports = {
     try {
       const { locals: { UserId } } = req
       const { params: { environment } } = req
+
       const logs = await Log.findAll({
         where: { UserId, environment }
       })
 
-      if (logs.length === 0) {
-        return res.status(204).json({ message: 'there is no logs' })
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
       }
 
       return res.status(200).json(logs)
@@ -45,12 +48,14 @@ module.exports = {
     try {
       const { locals: { UserId } } = req
       const { params: { level } } = req
+
       const logs = await Log.findAll({
         where: { UserId, level }
       })
 
-      if (logs.length === 0) {
-        return res.status(204).json({ message: 'there is no logs' })
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
       }
 
       return res.status(200).json(logs)
@@ -62,17 +67,17 @@ module.exports = {
 
   create: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const { body } = req
       const isValidSchemaLog = await schemaValidationForLogs(body)
 
       if (!isValidSchemaLog) {
-        return res.status(406).json({ message: 'Log body is not valid' })
+        return res.status(406).json({ message: 'Invalid data' })
       }
 
       const result = await Log.create({
         ...body,
-        UserId
+        UserId: id
       })
 
       return res.status(200).json({ result })
@@ -82,9 +87,50 @@ module.exports = {
     }
   },
 
-  deleteByLogId: async (req, res) => {
+  restoreById: async (req, res) => {
     try {
-      const UserId = req.locals
+      const { params: { id } } = req
+      const isLogFound = await Log.findOne({
+        where: { id },
+        paranoid: false
+      })
+
+      if (!isLogFound) {
+        return res.status(200).json({ message: 'There is no log' })
+      }
+
+      await Log.restore()
+
+      return res.status(200).json({ message: 'Log restored successfully' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
+  restoreAllByUser: async (req, res) => {
+    const { locals: { UserId } } = req
+
+    const logs = await Log.findAll({
+      where: { UserId },
+      paranoid: false
+    })
+
+    const hasLogs = logs.length
+    if (!hasLogs) {
+      return res.status(200).json({ message: 'There are no logs' })
+    }
+
+    await Log.restore({
+      where: { UserId }
+    })
+
+    return res.status(200).json({ message: 'All logs restored successfully' })
+  },
+
+  deleteById: async (req, res) => {
+    try {
+      const { locals: { UserId } } = req
       const { params: { id } } = req
 
       const logExist = await Log.findOne({
@@ -92,11 +138,34 @@ module.exports = {
       })
 
       if (!logExist) {
-        return res.status(406).json({ message: 'Log not existis.' })
+        return res.status(200).json({ message: 'There is no log' })
       }
 
       await Log.destroy({
         where: { id }
+      })
+
+      return res.status(200).json({ message: 'Deleted successfully' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ message: 'Internal Server Error' })
+    }
+  },
+
+  deleteAllByUser: async (req, res) => {
+    try {
+      const { locals: { UserId } } = req
+      const logs = await Log.findAll({
+        where: { UserId }
+      })
+
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
+      }
+
+      await Log.destroy({
+        where: { UserId }
       })
 
       return res.status(200).json({ message: 'Deleted successfully' })
@@ -115,7 +184,7 @@ module.exports = {
       })
 
       if (!logExist) {
-        return res.status(406).json({ message: 'Log not existis.' })
+        return res.status(200).json({ message: 'There is no log' })
       }
 
       await Log.destroy({
@@ -123,92 +192,35 @@ module.exports = {
         force: true
       })
 
-      return res.status(200).json({ message: 'Log deleted forever, this cannot be undone.' })
+      return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
-  deleteAllLogsByUser: async (req, res) => {
+  hardDeleteAllByUser: async (req, res) => {
     try {
-      const UserId = req.locals
-      const logs = await Log.findAll({
-        where: { UserId }
-      })
-
-      if (logs.length === 0) {
-        return res.status(406).json({ message: 'There is no logs to delete' })
-      }
-
-      await Log.destroy({
-        where: { UserId }
-      })
-
-      return res.status(200).json({ message: 'Deleted successfully' })
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
-    }
-  },
-
-  hardDeleteAll: async (req, res) => {
-    try {
-      const UserId = req.locals
+      const { locals: { UserId } } = req
 
       const logs = await Log.findAll({
         where: { UserId }
       })
 
-      if (logs.length === 0) {
-        return res.status(406).json({ message: 'There is no logs to delete' })
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
       }
 
       await Log.destroy({
         where: { UserId },
         force: true
       })
-      return res.status(200).json({ message: 'All logs deleted forever, this cannot be undone.' })
+
+      return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
-  },
-
-  restoreLogById: async (req, res) => {
-    const { params: { id } } = req
-    const logs = await Log.findOne({
-      where: {
-        id
-      },
-      paranoid: false
-    })
-
-    if (!logs) {
-      return res.status(400).json({ message: 'There is no logs to restore' })
-    }
-
-    await Log.restore()
-
-    return res.status(200).json({ message: 'All logs restored successfully.' })
-  },
-
-  restoreAllLogs: async (req, res) => {
-    const UserId = req.locals
-
-    const logs = await Log.findAll({
-      where: { UserId },
-      paranoid: false
-    })
-
-    if (logs.length === 0) {
-      return res.status(400).json({ message: 'There is no logs to restore' })
-    }
-
-    await Log.restore({
-      where: { UserId }
-    })
-
-    return res.status(200).json({ message: 'All logs restored successfully.' })
   }
 }

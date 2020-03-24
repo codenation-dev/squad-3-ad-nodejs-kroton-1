@@ -10,16 +10,16 @@ router.get('/level/:level', controller.getByLevel)
 
 router.post('/', controller.create)
 
-router.post('/restore', controller.restoreAllLogs)
+router.post('/restore/id/:id', controller.restoreById)
 
-router.post('/restore/:id', controller.restoreLogById)
+router.post('/restore/all', controller.restoreAllByUser)
 
-router.delete('/id/:id', controller.deleteByLogId)
+router.delete('/id/:id', controller.deleteById)
 
-router.delete('/all', controller.deleteAllLogsByUser)
+router.delete('/all', controller.deleteAllByUser)
 
 router.delete('/hard/:id', controller.hardDeleteById)
 
-router.delete('/all/hard', controller.hardDeleteAll)
+router.delete('/all/hard', controller.hardDeleteAllByUser)
 
 module.exports = router
