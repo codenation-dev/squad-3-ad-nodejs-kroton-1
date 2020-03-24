@@ -15,11 +15,13 @@ module.exports = {
         include: Log
       })
 
-      if (Logs.length === 0) {
+      const hasLogs = Logs.length
+
+      if (!hasLogs) {
         return res.status(406).json({ message: 'There are no logs' })
       }
 
-      return res.status(200).json({ total: Logs.length, Logs })
+      return res.status(200).json({ total: hasLogs, Logs })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
@@ -45,7 +47,7 @@ module.exports = {
       })
 
       if (existsEmail) {
-        return res.status(409).json({ message: 'User email already exists.' })
+        return res.status(409).json({ message: 'User email already exists' })
       }
 
       const hashedPassword = await generateHashedPassword(password)
@@ -73,8 +75,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { body } = req
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
+      const { locals: { id } } = req
 
       const dataToBeUpdated = []
       for (const obj in body) {
@@ -91,12 +92,14 @@ module.exports = {
       const user = await User.findOne({
         where: { id }
       })
+
       if (!user) {
         return res.status(204).json({ message: 'There is no user' })
       }
 
       if (dataToBeUpdated.indexOf('oldPassword') !== -1) {
-        if (!await compareHash(body.oldPassword, user.password)) {
+        const passwordMatch = await compareHash(body.oldPassword, user.password)
+        if (!passwordMatch) {
           return res.status(401).json({ message: 'Password does not match' })
         }
 
@@ -111,7 +114,7 @@ module.exports = {
 
       const { status, message } = await updateByItem(dataToBeUpdated.join(), body, id)
 
-      res.status(status).json({ message: message })
+      res.status(status).json({ message })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })

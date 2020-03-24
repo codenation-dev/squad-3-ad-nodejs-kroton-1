@@ -12,7 +12,7 @@ router.post('/signin', authenticate)
 
 router.post('/restore', authenticateForRestoreUser, authorizeForRestoreUser, controller.restore)
 
-router.patch('/', authorize, controller.update)
+router.patch('/', getIdByToken, authorize, controller.update)
 
 router.delete('/', getIdByToken, authorize, controller.delete)
 

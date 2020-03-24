@@ -122,7 +122,7 @@ module.exports = {
     try {
       const { authorization } = req.headers
       if (!authorization) {
-        res.status(406).json({ error: 'Token not provided' })
+        return res.status(406).json({ error: 'Token not provided' })
       } else {
         const { userId: { id } } = decodeToken(authorization)
         req.locals = id
