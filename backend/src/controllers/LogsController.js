@@ -157,11 +157,10 @@ module.exports = {
 
   hardDeleteAll: async (req, res) => {
     try {
-      const { authorization } = req.headers
-      const { userId: { id } } = decodeToken(authorization)
+      const UserId = req.locals
 
       const logs = await Log.findAll({
-        where: { UserId: id }
+        where: { UserId }
       })
 
       if (logs.length === 0) {
@@ -169,7 +168,7 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { UserId: id },
+        where: { UserId },
         force: true
       })
       return res.status(200).json({ message: 'All logs deleted forever, this cannot be undone.' })
@@ -181,7 +180,6 @@ module.exports = {
 
   restoreLogById: async (req, res) => {
     const { params: { id } } = req
-    console.log(id, 'ID AQUIIIIIIIIIIIIIIIIIIII')
     const logs = await Log.findOne({
       where: {
         id
@@ -199,11 +197,10 @@ module.exports = {
   },
 
   restoreAllLogs: async (req, res) => {
-    const { authorization } = req.headers
-    const { userId: { id } } = decodeToken(authorization)
+    const UserId = req.locals
 
     const logs = await Log.findAll({
-      where: { UserId: id },
+      where: { UserId },
       paranoid: false
     })
 
@@ -212,7 +209,7 @@ module.exports = {
     }
 
     await Log.restore({
-      where: { UserId: id }
+      where: { UserId }
     })
 
     return res.status(200).json({ message: 'All logs restored successfully.' })
