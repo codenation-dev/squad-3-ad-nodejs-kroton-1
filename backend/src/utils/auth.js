@@ -8,7 +8,12 @@ module.exports = {
     return token
   },
   decodeToken: (token) => {
-    const [, tokenSplited] = token.split(' ')
-    return jwt.verify(tokenSplited, process.env.SECRET)
+    try {
+      const [, tokenSplited] = token.split(' ')
+      return jwt.verify(tokenSplited, process.env.SECRET)
+    } catch (error) {
+      console.log(error)
+      return { status: 500, message: 'Internal Server Error' }
+    }
   }
 }

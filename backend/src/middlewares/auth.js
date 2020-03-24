@@ -115,14 +115,18 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
-      res.status(500).json({ error })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
   getIdByToken: (req, res, next) => {
     try {
-      const { authorization } = req.headers
+      const authorization = req.headers.authorization
       if (!authorization) {
-        return res.status(406).json({ error: 'Token not provided' })
+        return res.status(401).json({ message: 'Token not provided' })
+      }
+      const [bearer, token] = authorization.split(' ')
+      if (!bearer || !token) {
+        return res.status(401).json({ message: 'Invalid token' })
       } else {
         const { userId: { id } } = decodeToken(authorization)
 
@@ -131,7 +135,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
-      res.status(500).json({ error })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   }
 }
