@@ -175,7 +175,6 @@ module.exports = {
         where: { UserId: id },
         force: true
       })
-
       return res.status(200).json({ message: 'All logs deleted forever, this cannot be undone.' })
     } catch (error) {
       console.log(error)
@@ -193,7 +192,7 @@ module.exports = {
       paranoid: false
     })
 
-    if (!logs) {
+    if (logs.length === 0) {
       return res.status(400).json({ message: 'There is no logs to restore' })
     }
 
@@ -207,17 +206,17 @@ module.exports = {
     const { userId: { id } } = decodeToken(authorization)
 
     const logs = await Log.findAll({
-      where: {
-        id
-      },
+      where: { UserId: id },
       paranoid: false
     })
 
-    if (!logs) {
+    if (logs.length === 0) {
       return res.status(400).json({ message: 'There is no logs to restore' })
     }
 
-    await Log.restore()
+    await Log.restore({
+      where: { UserId: id }
+    })
 
     return res.status(200).json({ message: 'All logs restored successfully.' })
   }
