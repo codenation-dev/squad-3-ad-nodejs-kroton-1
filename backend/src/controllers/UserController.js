@@ -75,7 +75,7 @@ module.exports = {
   update: async (req, res) => {
     try {
       const { body } = req
-      const { locals: { id } } = req
+      const { locals: id } = req
 
       const dataToBeUpdated = []
       for (const obj in body) {
@@ -123,14 +123,15 @@ module.exports = {
 
   delete: async (req, res) => {
     try {
-      const { locals: { id } } = req
+      const { locals: id } = req
 
       const userExists = await User.findOne({
         where: { id }
       })
-
+      console.log(id, 'AQUIIIIIIIIIIIIII')
+      console.log(userExists, 'AQUIIIIIIIIIIIIIIIIIII')
       if (!userExists) {
-        return res.status(204).json({ message: 'There is no user' })
+        return res.status(200).json({ message: 'There is no user' })
       }
 
       await Log.destroy({
@@ -150,14 +151,14 @@ module.exports = {
 
   hardDelete: async (req, res) => {
     try {
-      const { locals: { id } } = req
+      const { locals: id } = req
 
       const userExists = await User.findOne({
         where: { id }
       })
 
       if (!userExists) {
-        return res.status(204).json({ message: 'There is no user' })
+        return res.status(200).json({ message: 'There is no user' })
       }
 
       await Log.destroy({
@@ -190,7 +191,7 @@ module.exports = {
     })
 
     if (!user) {
-      return res.status(204).json({ message: 'There is no user' })
+      return res.status(200).json({ message: 'There is no user' })
     }
 
     await User.restore({
