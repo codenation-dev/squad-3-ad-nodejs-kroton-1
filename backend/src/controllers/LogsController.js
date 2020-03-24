@@ -184,7 +184,7 @@ module.exports = {
 
   restoreLogById: async (req, res) => {
     const { params: { id } } = req
-
+    console.log(id, 'ID AQUIIIIIIIIIIIIIIIIIIII')
     const logs = await Log.findOne({
       where: {
         id
@@ -192,7 +192,7 @@ module.exports = {
       paranoid: false
     })
 
-    if (logs.length === 0) {
+    if (!logs) {
       return res.status(400).json({ message: 'There is no logs to restore' })
     }
 

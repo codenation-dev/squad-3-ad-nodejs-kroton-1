@@ -51,7 +51,7 @@ afterAll(async () => {
 })
 
 // ----- Inicio dos testes
-describe.skip('The API on /logs/sender endpoint at GET method should...', () => {
+describe('The API on /logs/sender endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -87,7 +87,7 @@ describe.skip('The API on /logs/sender endpoint at GET method should...', () => 
   })
 })
 
-describe.skip('The API on /logs/environment/:environment endpoint at GET method should...', () => {
+describe('The API on /logs/environment/:environment endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -153,7 +153,7 @@ describe.skip('The API on /logs/environment/:environment endpoint at GET method 
   })
 })
 
-describe.skip('The API on /logs/level/:level endpoint at GET method should...', () => {
+describe('The API on /logs/level/:level endpoint at GET method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -237,7 +237,7 @@ describe.skip('The API on /logs/level/:level endpoint at GET method should...', 
   })
 })
 
-describe.skip('The API on /logs endpoint at POST method should...', () => {
+describe('The API on /logs endpoint at POST method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -302,7 +302,7 @@ describe.skip('The API on /logs endpoint at POST method should...', () => {
   })
 })
 
-describe.skip('The API on /logs/restore Endpoint at POST method should...', () => {
+describe('The API on /logs/restore Endpoint at POST method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -367,7 +367,90 @@ describe.skip('The API on /logs/restore Endpoint at POST method should...', () =
   })
 })
 
-describe.skip('The API on /logs/id/:id endpoint at DELETE method should...', () => {
+describe('The API on /logs/restore/:id Endpoint at POST method should...', () => {
+  beforeEach(async () => {
+    await signUp(userSignup)
+    await signIn(userSignin)
+    await createLog(mockLogs.validLog)
+  })
+
+  afterEach(async () => {
+    await cleanDB()
+  })
+
+  test('return status code 200 and a message of successfully', async () => {
+    await request(app)
+      .delete('/logs/all')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+    const res = await request(app)
+      .post('/logs/restore/1')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'All logs restored successfully.' })
+  })
+
+  test('return status code 400 and a message when log has deleted hard', async () => {
+    await request(app)
+      .delete('/logs/all/hard')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    const res = await request(app)
+      .post('/logs/restore/1')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'There is no logs to restore' })
+  })
+
+  test('return status code 500 when token not provided', async () => {
+    const res = await request(app)
+      .post('/logs/restore/1')
+      .set('Authorization', 'Bearer ')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'jwt must be provided',
+        name: 'JsonWebTokenError'
+      }
+    })
+  })
+
+  test('return status code 500 when token are incorrect ', async () => {
+    const res = await request(app)
+      .post('/logs/restore/1')
+      .set('Authorization', 'Bearer some.token')
+
+    expect(res.statusCode).toEqual(500)
+    expect(res.body).toEqual({
+      error: {
+        message: 'jwt malformed',
+        name: 'JsonWebTokenError'
+      }
+    })
+  })
+
+  test('returns status code 404 and a message when the log does not exist', async () => {
+    const res = await request(app)
+      .delete('/logs/restore/90')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toEqual({})
+  })
+
+  test('returns status code 404 and an empty obj when log id is missing', async () => {
+    const res = await request(app)
+      .delete('/logs/restore/')
+      .set('Authorization', `Bearer ${authorization[0]}`)
+
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toEqual({})
+  })
+})
+
+describe('The API on /logs/id/:id endpoint at DELETE method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -424,7 +507,7 @@ describe.skip('The API on /logs/id/:id endpoint at DELETE method should...', () 
   })
 })
 
-describe.skip('The API on /logs/all endpoint at DELETE method should...', () => {
+describe('The API on /logs/all endpoint at DELETE method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -481,7 +564,7 @@ describe.skip('The API on /logs/all endpoint at DELETE method should...', () => 
   })
 })
 
-describe.skip('The API on /logs/hard/:id endpoint at DELETE method should...', () => {
+describe('The API on /logs/hard/:id endpoint at DELETE method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
@@ -550,7 +633,7 @@ describe.skip('The API on /logs/hard/:id endpoint at DELETE method should...', (
   })
 })
 
-describe.skip('The API on /logs/all/hard endpoint at DELETE method should...', () => {
+describe('The API on /logs/all/hard endpoint at DELETE method should...', () => {
   beforeEach(async () => {
     await signUp(userSignup)
     await signIn(userSignin)
