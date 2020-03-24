@@ -1,7 +1,7 @@
 const { User } = require('../models')
 
 module.exports = {
-  updateByItem: async (bodyItem, body, id, user) => {
+  updateByItem: async (bodyItem, body, id) => {
     switch (bodyItem) {
       case 'name,email,oldPassword,newPassword,confirmPassword':
         await User.update({

@@ -8,7 +8,7 @@ const { mockLogs } = require('./mocks/logs')
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor () {
+  constructor() {
     return constantDate
   }
 }

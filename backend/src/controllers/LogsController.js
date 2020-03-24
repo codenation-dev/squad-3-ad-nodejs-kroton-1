@@ -5,76 +5,73 @@ module.exports = {
 
   getBySender: async (req, res) => {
     try {
-      const UserId = req.locals
+      const { locals: { UserId } } = req
       const { params: { senderApplication } } = req
       const logs = await Log.findAll({
         where: { UserId, senderApplication }
       })
 
       if (logs.length === 0) {
-        return res.status(406).json({
-          message: 'Not acceptable',
-          error: 'Nonexistent id'
-        })
+        return res.status(204).json({ message: 'there is no logs' })
       }
 
       return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
-      res.status(500).json({ message: 'Internal Server Error' })
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   getByEnvironment: async (req, res) => {
     try {
-      const UserId = req.locals
+      const { locals: { UserId } } = req
       const { params: { environment } } = req
       const logs = await Log.findAll({
         where: { UserId, environment }
       })
 
       if (logs.length === 0) {
-        return res.status(406).json({ message: 'Invalid environment' })
+        return res.status(204).json({ message: 'there is no logs' })
       }
 
       return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
-      res.status(500).json(error)
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   getByLevel: async (req, res) => {
     try {
-      const UserId = req.locals
+      const { locals: { UserId } } = req
       const { params: { level } } = req
       const logs = await Log.findAll({
         where: { UserId, level }
       })
 
       if (logs.length === 0) {
-        return res.status(406).json({ message: 'Level does not exist' })
+        return res.status(204).json({ message: 'there is no logs' })
       }
 
       return res.status(200).json(logs)
     } catch (error) {
       console.log(error)
-      res.status(500).json(error)
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
 
   create: async (req, res) => {
     try {
-      const UserId = req.locals
-      const logData = req.body
-      const validatedModelLog = await schemaValidationForLogs(logData)
+      const { locals: { UserId } } = req
+      const { body } = req
+      const isValidSchemaLog = await schemaValidationForLogs(body)
 
-      if (!validatedModelLog) {
-        return res.status(406).json({ error: 'Log body is not valid' })
+      if (!isValidSchemaLog) {
+        return res.status(406).json({ message: 'Log body is not valid' })
       }
 
       const result = await Log.create({
-        ...logData,
+        ...body,
         UserId
       })
 

@@ -12,7 +12,7 @@ module.exports = {
     return schema
   },
 
-  schemaValidationForCheckPassword: () => {
+  schemaValidationForUpdateUser: () => {
     const schema = yup.object().shape({
       name: yup.string(),
       email: yup.string().email(),

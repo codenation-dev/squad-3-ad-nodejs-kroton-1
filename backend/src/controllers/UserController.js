@@ -1,7 +1,7 @@
 const { User } = require('../models')
 const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
-const { schemaValidationForUsers, schemaValidationForCheckPassword } = require('../utils/validators')
+const { schemaValidationForUsers, schemaValidationForUpdateUser } = require('../utils/validators')
 const { decodeToken } = require('../utils/auth')
 const { updateByItem } = require('../utils/updateUserValidator')
 
@@ -85,7 +85,7 @@ module.exports = {
         }
       }
 
-      const validation = (await schemaValidationForCheckPassword().isValid(body))
+      const validation = (await schemaValidationForUpdateUser().isValid(body))
       if (!validation) {
         return res.status(406).json({ message: 'Data values are not valid' })
       }
@@ -113,8 +113,8 @@ module.exports = {
         }
       }
 
-      const responseOfUserValidator = await updateByItem(dataToBeUpdated.join(), body, id, user)
-      res.status(responseOfUserValidator.status).json({ message: responseOfUserValidator.message })
+      const { status, message } = await updateByItem(dataToBeUpdated.join(), body, id)
+      res.status(status).json({ message: message })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
