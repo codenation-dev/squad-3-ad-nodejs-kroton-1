@@ -1,9 +1,5 @@
 const Sequelize = require('sequelize')
 
-/* ---- Teste!
-const path = require('path')
-path.resolve(__dirname, '../../.env' */
-
 process.env.NODE_ENV === 'development'
   ? require('dotenv').config('.env')
   : console.log('server started in production environment')
