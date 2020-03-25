@@ -100,7 +100,9 @@ module.exports = {
         return res.status(200).json({ message: 'There is no log' })
       }
 
-      await Log.restore()
+      await Log.restore({
+        where: { id }
+      })
 
       return res.status(200).json({ message: 'Log restored successfully' })
     } catch (error) {
