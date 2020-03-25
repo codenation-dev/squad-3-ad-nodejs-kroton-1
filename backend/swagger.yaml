@@ -1,0 +1,284 @@
+swagger: '2.0'
+
+host: localhost:8080
+basePath: /
+
+info:
+  version: 1.0.0
+  title: Central de Erros API
+  description: Store and retrieve application logs from other applications
+  license:
+    name: MIT
+    url: 'http://opensource.org/licenses/MIT'
+
+components:
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+
+  /users/logs:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get all logs
+      description: Find and retrieve all the logs sotred by the user. Is necessary to especify 'Bearer' Token.
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+
+  /users/signup:
+    post:
+      summary: Create user
+      description: Create a new user account to get access to the API
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: João da Silva
+              email:
+                type: string
+                example: joao@email.com.br
+              password:
+                type: string
+                example: "123456"
+      responses:
+        201:
+          description: User successfully created
+          schema:
+            $ref: '#/definitions/User'
+          
+        
+
+
+  /users/signin:
+    post:
+      summary: User login
+      description: Authenticate an existing user returning a token for API requests
+      produces:
+       - string
+      parameters:
+        - in: body
+          name: user
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: joao@email.com.br
+              password:
+                type: string
+                example: "123456"
+      responses:
+        200:
+          description: OK
+
+
+  /users/restore:
+    post:
+      summary: Restore user account
+      description: Reactivates a previouly disabled user account
+      responses:
+        200:
+          description: OK
+
+
+  /users:
+    patch:
+      summary: Update user
+      description: Update an authenticated user with the new information provided in request body
+      consumes:
+        - application/json
+      produces:
+       - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: João da Silva
+              email:
+                type: string
+                example: joao@email.com.br
+    delete:
+      summary: Disable user
+      description: Executes a soft delete disabling the user account
+      responses:
+        200:
+          description: OK
+
+
+  /users/hard:
+    delete:
+      summary: Delete user
+      description: Remove user account and all the logs associated with it
+      responses:
+        200:
+          description: OK
+
+
+  /logs/sender/{senderApplication}:
+    get:
+      summary: Get logs by application
+      description: Get all the logs for the application passed in the url parameter
+      parameters:
+        - in: path
+          name: senderApplication
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+
+
+  /logs/environment/{environment}:
+    get:
+      summary: Get logs by environment
+      description: Get all the logs with the same environment passed in the url parameter
+      parameters:
+        - in: path
+          name: environment
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+
+
+  /logs/level/{level}:
+    get:
+      security:
+          - bearerAuth: []
+      summary: Get logs by level
+      description: Get all the logs with the same level passed in the url parameter
+      parameters:
+        - in: path
+          name: level
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+
+
+  /logs:
+    post:
+      summary: nonono
+      description: nonono
+      responses:
+        200:
+          description: OK
+
+
+  /logs/id/{id}:
+    delete:
+      summary: Delete log
+      description: Delete the log with the id passed in the url
+      parameters:
+        - in: path
+          name: id
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema: 
+            $ref: '#/definitions/Log'
+
+
+  /logs/all:
+    delete:
+      summary: Delete logs
+      description: Delete all the logs created by the user
+      responses:
+        200:
+          description: OK
+
+
+definitions:
+  User:
+    type: object
+    properties:
+      name:
+        type: string
+        example: João da Silva
+      email:
+        type: string
+        example: joao@email.com.br
+      password:
+        type: string
+        format: password
+        example: "123456"
+    required:
+      - name
+      - email
+      - password
+  
+  Log:
+    type: object
+    properties:
+      level:
+        type: string
+        enum: [FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL, OFF]
+        example: WARN
+      description:
+        type: string
+        example: Application restarted
+      senderApplication:
+        type: string
+        example: Server load monitor
+      sendDate:
+        type: string
+      environment:
+        type: string
+        enum: [production, homologation]
+        example: homologation
+    required: 
+      - level
+      - description
+      - senderApplication
+      - sendDate
+      - environment
+      - userId
