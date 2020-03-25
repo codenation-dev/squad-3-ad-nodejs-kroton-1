@@ -79,23 +79,62 @@ paths:
       summary: User login
       description: Authenticate an existing user returning a token for API requests
       produces:
-       - string
+       - application/json
       parameters:
         - in: body
-          name: user
+          name: User credentials
           schema:
             type: object
             properties:
               email:
                 type: string
+                format: email
                 example: joao@email.com.br
               password:
                 type: string
+                format: password
                 example: "123456"
       responses:
         200:
-          description: OK
-
+          description: Returns the token in the request body 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOnsiaWQiOjJ9LCJpYXQiOjE1ODUxNjkwMjMsImV4cCI6MTU4NTI1NTQyM30.wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+        400:
+          description: Returns Bad Request 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User not found
+        406:
+          description: Returns Not Acceptable 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: You are input wrong data then necessary
+        _406:
+          description: Returns Not Acceptable 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Data values are not valid
 
   /users/restore:
     post:
@@ -136,11 +175,31 @@ paths:
 
   /users/hard:
     delete:
-      summary: Delete user
-      description: Remove user account and all the logs associated with it
+      security:
+        - bearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: You need pass the Authorization header using the Bearer schema.
+          schema:
+            type: string
+            required: true
+            example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+      summary: Delete user forever
+      description: Remove user account and all the logs associated with it from the database. This action cannot be undone. The user id will be provided by the token.
       responses:
         200:
-          description: OK
+          description: Returns the body with a message of deletation 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Deleted successfully, this action cannot be undone
 
 
   /logs/sender/{senderApplication}:
