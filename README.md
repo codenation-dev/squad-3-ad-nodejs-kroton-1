@@ -1,13 +1,8 @@
+[![Node.js](https://nodejs.org/static/images/logo-light.svg)](https://nodejs.org/)
+
 [![Standard - JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
 # Central de Erros
-
-## Equipe
-
-- Guilherme Cesar Da Silva
-- Henrique Detoni
-- Juiliano Freire Ribeiro
-- Luane Caroline Aquino Cavalcanti
 
 ## Download
 
@@ -20,10 +15,19 @@ git clone https://github.com/codenation-dev/squad-3-ad-nodejs-kroton-1.git
 ```
 npm i
 ```
+
+## Configure a variável de ambiente no linux
+
+Essa variável irá permitir que a biblioteca dotenv encontre o arquivo .env presente na raiz do projeto. Esse arquivo contém as variáveis de ambiente necessárias para rodar todo o projeto em ambiente de desenvolvimento.
+
+```
+export NODE_ENV=development
+```
+
 ## Inicia o docker localmente
 
 ```
-docker-compose up -d
+npm run docker
 ```
 
 ## Rodar aplicação localmente
@@ -31,6 +35,17 @@ docker-compose up -d
 ```
 npm start
 ```
+
+## Considerações
+
+Este é o Projeto Final do programa de aceleração de carreiras AceleraDev, promovido pela CodeNation com foco na tecnologia Node.js e apoiado pela empresa Kroton Educacional.
+
+## Equipe
+
+- Guilherme Cesar Da Silva
+- Henrique Detoni
+- Juiliano Freire Ribeiro
+- Luane Caroline Aquino Cavalcanti
 
 ## Objetivo
 
