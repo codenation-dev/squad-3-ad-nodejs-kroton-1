@@ -13,7 +13,7 @@ module.exports = {
       return jwt.verify(tokenSplited, process.env.SECRET)
     } catch (error) {
       console.log(error)
-      return { status: 500, message: 'Internal Server Error' }
+      return { userId: { id: 0 }, iat: 0, exp: 0 }
     }
   }
 }

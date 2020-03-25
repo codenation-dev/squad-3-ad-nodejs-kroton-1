@@ -1,9 +1,8 @@
 const { User } = require('../models')
 const { Log } = require('../models')
 const { generateHashedPassword, compareHash } = require('../utils/hashing')
-const { schemaValidationForUsers, schemaValidationForUpdateUser } = require('../utils/validators')
+const { schemaValidationForUsers, schemaValidationForUpdateUser, updateByItem } = require('../utils/validators')
 const { decodeToken } = require('../utils/auth')
-const { updateByItem } = require('../utils/updateUserValidator')
 
 module.exports = {
 
@@ -18,7 +17,7 @@ module.exports = {
       const hasLogs = Logs.length
 
       if (!hasLogs) {
-        return res.status(406).json({ message: 'There are no logs' })
+        return res.status(200).json({ message: 'There are no logs' })
       }
 
       return res.status(200).json({ total: hasLogs, Logs })
@@ -70,6 +69,28 @@ module.exports = {
       console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
+  },
+  
+  restore: async (req, res) => {
+    const { locals: { token } } = req
+    const { userId: { id } } = decodeToken(token)
+
+    const user = await User.findOne({
+      where: {
+        id
+      },
+      paranoid: false
+    })
+
+    if (!user) {
+      return res.status(200).json({ message: 'There is no user' })
+    }
+
+    await User.restore({
+      where: { id }
+    })
+
+    return res.status(200).json({ message: 'User restored successfully.' })
   },
 
   update: async (req, res) => {
@@ -128,8 +149,6 @@ module.exports = {
       const userExists = await User.findOne({
         where: { id }
       })
-      console.log(id, 'AQUIIIIIIIIIIIIII')
-      console.log(userExists, 'AQUIIIIIIIIIIIIIIIIIII')
       if (!userExists) {
         return res.status(200).json({ message: 'There is no user' })
       }
@@ -177,27 +196,5 @@ module.exports = {
       console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
-  },
-
-  restore: async (req, res) => {
-    const { locals: { token } } = req
-    const { userId: { id } } = decodeToken(token)
-
-    const user = await User.findOne({
-      where: {
-        id
-      },
-      paranoid: false
-    })
-
-    if (!user) {
-      return res.status(200).json({ message: 'There is no user' })
-    }
-
-    await User.restore({
-      where: { id }
-    })
-
-    return res.status(200).json({ message: 'User restored successfully.' })
   }
 }

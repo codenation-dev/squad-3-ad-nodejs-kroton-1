@@ -38,7 +38,7 @@ const mockLogs = {
 
 const expectedLogs = {
   oneLog: {
-    result: {
+    createdLog: {
       UserId: 1,
       createdAt: '2020-02-15T18:01:01.000Z',
       description: 'Aplicattion down',

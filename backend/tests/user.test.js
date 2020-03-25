@@ -22,6 +22,90 @@ afterAll(async () => {
   await sequelize.close()
 })
 
+describe('The API on /users/logs Endpoint at GET method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app)
+      .post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+
+    token.push(res.body.token)
+
+    await request(app)
+      .post('/logs')
+      .send(mockLogs.validLog)
+      .set('Authorization', `Bearer ${token}`)
+
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.drop()
+    token.pop()
+
+    await sequelize.sync({ force: true })
+  })
+
+  test('return status 200, total of logs and the logs information', async () => {
+    const res = await request(app)
+      .get('/users/logs')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      total: 1,
+      Logs: [{
+        UserId: 1,
+        createdAt: '2020-02-15T18:01:01.000Z',
+        deletedAt: null,
+        description: 'Aplicattion down',
+        environment: 'production',
+        id: 1,
+        level: 'FATAL',
+        sendDate: '10/10/2019 15:00',
+        senderApplication: 'App_1',
+        updatedAt: '2020-02-15T18:01:01.000Z'
+      }]
+    })
+  })
+
+  test('return status 200 and a message when there is no log', async () => {
+    await request(app)
+      .delete('/logs/id/1')
+      .set('Authorization', `Bearer ${token}`)
+
+    const res = await request(app)
+      .get('/users/logs')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'There are no logs' })
+  })
+
+  test('return status 401 when token is incorrect', async () => {
+    const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+    const res = await request(app)
+      .get('/users/logs')
+      .set('Authorization', `Bearer ${incorrectToken}`)
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Invalid token' })
+  })
+
+  test('return status 401 when token not provided', async () => {
+    const res = await request(app)
+      .get('/users/logs')
+      .set('Authorization', 'Bearer ')
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Invalid token' })
+  })
+})
+
 describe('The API on /users/signup Endpoint at POST method should...', () => {
   afterEach(async () => {
     await Log.drop()
@@ -205,6 +289,71 @@ describe('The API on /users/signin Endpoint at POST method should...', () => {
   })
 })
 
+describe('The API on /users/restore Endpoint at POST method should...', () => {
+  const token = []
+  beforeEach(async (done) => {
+    await request(app).post('/users/signup')
+      .send(userPossibilitiesForCreate.userWithValidData)
+    const res = await request(app)
+      .post('/users/signin')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+
+    token.push(res.body.token)
+    done()
+  })
+
+  afterEach(async () => {
+    await Log.drop()
+    await User.drop()
+    token.pop()
+
+    await sequelize.sync({ force: true })
+  })
+
+  test('return status code 200 and a message of successfully', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ message: 'User restored successfully.' })
+  })
+
+  test('return status code 400 and a message when user has deleted hard', async () => {
+    await request(app)
+      .delete('/users/hard')
+      .set('Authorization', `Bearer ${token}`)
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithValidData)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'User not found' })
+  })
+
+  test('return status code 400 and a message of error when email is incorrect', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithInvalidEmail)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(400)
+    expect(res.body).toEqual({ message: 'User not found' })
+  })
+
+  test('return status code 401 and a message of error when password is incorrect', async () => {
+    const res = await request(app)
+      .post('/users/restore')
+      .send(userPossibilitiesForAuthenticate.userWithInvalidPassword)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Incorrect password' })
+  })
+})
+
 describe('The API on /users Endpoint at PATCH method should...', () => {
   const token = []
   beforeEach(async (done) => {
@@ -351,100 +500,6 @@ describe('The API on /users Endpoint at PATCH method should...', () => {
   })
 })
 
-describe('The API on /users/logs Endpoint at GET method should...', () => {
-  const token = []
-  beforeEach(async (done) => {
-    await request(app)
-      .post('/users/signup')
-      .send(userPossibilitiesForCreate.userWithValidData)
-    const res = await request(app)
-      .post('/users/signin')
-      .send(userPossibilitiesForAuthenticate.userWithValidData)
-
-    token.push(res.body.token)
-
-    await request(app)
-      .post('/logs')
-      .send(mockLogs.validLog)
-      .set('Authorization', `Bearer ${token}`)
-
-    done()
-  })
-
-  afterEach(async () => {
-    await Log.drop()
-    await User.drop()
-    token.pop()
-
-    await sequelize.sync({ force: true })
-  })
-
-  test('return status 200, total of logs and the logs information', async () => {
-    const res = await request(app)
-      .get('/users/logs')
-      .set('Authorization', `Bearer ${token}`)
-
-    expect(res.statusCode).toEqual(200)
-    expect(res.body).toEqual({
-      total: 1,
-      Logs: [{
-        UserId: 1,
-        createdAt: '2020-02-15T18:01:01.000Z',
-        deletedAt: null,
-        description: 'Aplicattion down',
-        environment: 'production',
-        id: 1,
-        level: 'FATAL',
-        sendDate: '10/10/2019 15:00',
-        senderApplication: 'App_1',
-        updatedAt: '2020-02-15T18:01:01.000Z'
-      }]
-    })
-  })
-
-  test('return status 406 and a message when there is no log', async () => {
-    await request(app)
-      .delete('/logs/id/1')
-      .set('Authorization', `Bearer ${token}`)
-
-    const res = await request(app)
-      .get('/users/logs')
-      .set('Authorization', `Bearer ${token}`)
-
-    expect(res.statusCode).toEqual(406)
-    expect(res.body).toEqual({ message: 'There are no logs' })
-  })
-
-  test('return status 500 when token is incorrect', async () => {
-    const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-    const res = await request(app)
-      .get('/users/logs')
-      .set('Authorization', `Bearer ${incorrectToken}`)
-
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'invalid signature',
-        name: 'JsonWebTokenError'
-      }
-    })
-  })
-
-  test('return status 500 when token not provided', async () => {
-    const res = await request(app)
-      .get('/users/logs')
-      .set('Authorization', 'Bearer ')
-
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'jwt must be provided',
-        name: 'JsonWebTokenError'
-      }
-    })
-  })
-})
-
 describe('The API on /users Endpoint at DELETE method should...', () => {
   const token = []
   beforeEach(async (done) => {
@@ -489,33 +544,23 @@ describe('The API on /users Endpoint at DELETE method should...', () => {
     expect(res.body).toEqual({ message: 'There is no user' })
   })
 
-  test('return status 500 when token is incorrect', async () => {
+  test('return status 401 when token is incorrect', async () => {
     const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
     const res = await request(app)
       .delete('/users')
       .set('Authorization', `Bearer ${incorrectToken}`)
 
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'invalid signature',
-        name: 'JsonWebTokenError'
-      }
-    })
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Invalid token' })
   })
 
-  test('return status 500 when token not provided', async () => {
+  test('return status 401 when token not provided', async () => {
     const res = await request(app)
       .delete('/users')
       .set('Authorization', 'Bearer ')
 
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'jwt must be provided',
-        name: 'JsonWebTokenError'
-      }
-    })
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Invalid token' })
   })
 })
 
@@ -575,97 +620,22 @@ describe('The API on /users/hard Endpoint at DELETE method should...', () => {
     expect(res.body).toEqual({ message: 'There is no user' })
   })
 
-  test('return status 500 when token is incorrect', async () => {
+  test('return status 401 when token is incorrect', async () => {
     const incorrectToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
     const res = await request(app)
       .delete('/users/hard')
       .set('Authorization', `Bearer ${incorrectToken}`)
 
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'invalid signature',
-        name: 'JsonWebTokenError'
-      }
-    })
+    expect(res.statusCode).toEqual(401)
+    expect(res.body).toEqual({ message: 'Invalid token' })
   })
 
-  test('return status 500 when token not provided', async () => {
+  test('return status 401 when token not provided', async () => {
     const res = await request(app)
       .delete('/users/hard')
       .set('Authorization', 'Bearer ')
 
-    expect(res.statusCode).toEqual(500)
-    expect(res.body).toEqual({
-      error: {
-        message: 'jwt must be provided',
-        name: 'JsonWebTokenError'
-      }
-    })
-  })
-})
-
-describe('The API on /users/restore Endpoint at POST method should...', () => {
-  const token = []
-  beforeEach(async (done) => {
-    await request(app).post('/users/signup')
-      .send(userPossibilitiesForCreate.userWithValidData)
-    const res = await request(app)
-      .post('/users/signin')
-      .send(userPossibilitiesForAuthenticate.userWithValidData)
-
-    token.push(res.body.token)
-    done()
-  })
-
-  afterEach(async () => {
-    await Log.drop()
-    await User.drop()
-    token.pop()
-
-    await sequelize.sync({ force: true })
-  })
-
-  test('return status code 200 and a message of successfully', async () => {
-    const res = await request(app)
-      .post('/users/restore')
-      .send(userPossibilitiesForAuthenticate.userWithValidData)
-      .set('Authorization', `Bearer ${token}`)
-
-    expect(res.statusCode).toEqual(200)
-    expect(res.body).toEqual({ message: 'User restored successfully.' })
-  })
-
-  test('return status code 400 and a message when user has deleted hard', async () => {
-    await request(app)
-      .delete('/users/hard')
-      .set('Authorization', `Bearer ${token}`)
-    const res = await request(app)
-      .post('/users/restore')
-      .send(userPossibilitiesForAuthenticate.userWithValidData)
-      .set('Authorization', `Bearer ${token}`)
-
-    expect(res.statusCode).toEqual(400)
-    expect(res.body).toEqual({ message: 'User not found' })
-  })
-
-  test('return status code 400 and a message of error when email is incorrect', async () => {
-    const res = await request(app)
-      .post('/users/restore')
-      .send(userPossibilitiesForAuthenticate.userWithInvalidEmail)
-      .set('Authorization', `Bearer ${token}`)
-
-    expect(res.statusCode).toEqual(400)
-    expect(res.body).toEqual({ message: 'User not found' })
-  })
-
-  test('return status code 401 and a message of error when password is incorrect', async () => {
-    const res = await request(app)
-      .post('/users/restore')
-      .send(userPossibilitiesForAuthenticate.userWithInvalidPassword)
-      .set('Authorization', `Bearer ${token}`)
-
     expect(res.statusCode).toEqual(401)
-    expect(res.body).toEqual({ message: 'Incorrect password' })
+    expect(res.body).toEqual({ message: 'Invalid token' })
   })
 })

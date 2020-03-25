@@ -25,11 +25,11 @@ module.exports = {
 
   getByEnvironment: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const { params: { environment } } = req
 
       const logs = await Log.findAll({
-        where: { UserId, environment }
+        where: { UserId: id, environment }
       })
 
       const hasLogs = logs.length
@@ -46,11 +46,11 @@ module.exports = {
 
   getByLevel: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const { params: { level } } = req
 
       const logs = await Log.findAll({
-        where: { UserId, level }
+        where: { UserId: id, level }
       })
 
       const hasLogs = logs.length
@@ -89,12 +89,13 @@ module.exports = {
 
   restoreById: async (req, res) => {
     try {
-      const { params: { id } } = req
+      const { params: id } = req
+      const UserId = req.locals
       const isLogFound = await Log.findOne({
-        where: { id },
+        where: UserId,
+        id,
         paranoid: false
       })
-
       if (!isLogFound) {
         return res.status(200).json({ message: 'There is no log' })
       }
@@ -109,10 +110,10 @@ module.exports = {
   },
 
   restoreAllByUser: async (req, res) => {
-    const { locals: { UserId } } = req
+    const { locals: id } = req
 
     const logs = await Log.findAll({
-      where: { UserId },
+      where: { UserId: id },
       paranoid: false
     })
 
@@ -122,7 +123,7 @@ module.exports = {
     }
 
     await Log.restore({
-      where: { UserId }
+      where: { UserId: id }
     })
 
     return res.status(200).json({ message: 'All logs restored successfully' })
@@ -130,7 +131,7 @@ module.exports = {
 
   deleteById: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: UserId } = req
       const { params: { id } } = req
 
       const logExist = await Log.findOne({
@@ -142,7 +143,7 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { id }
+        where: { UserId, id }
       })
 
       return res.status(200).json({ message: 'Deleted successfully' })
@@ -154,9 +155,9 @@ module.exports = {
 
   deleteAllByUser: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
+      const { locals: id } = req
       const logs = await Log.findAll({
-        where: { UserId }
+        where: { UserId: id }
       })
 
       const hasLogs = logs.length
@@ -165,7 +166,7 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { UserId }
+        where: { UserId: id }
       })
 
       return res.status(200).json({ message: 'Deleted successfully' })
@@ -178,9 +179,9 @@ module.exports = {
   hardDeleteById: async (req, res) => {
     try {
       const { params: { id } } = req
-
+      const UserId = req.locals
       const logExist = await Log.findOne({
-        where: { id }
+        where: { UserId, id }
       })
 
       if (!logExist) {
@@ -188,7 +189,7 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { id },
+        where: { UserId, id },
         force: true
       })
 
@@ -201,10 +202,9 @@ module.exports = {
 
   hardDeleteAllByUser: async (req, res) => {
     try {
-      const { locals: { UserId } } = req
-
+      const { locals: id } = req
       const logs = await Log.findAll({
-        where: { UserId }
+        where: { UserId: id }
       })
 
       const hasLogs = logs.length
@@ -213,7 +213,7 @@ module.exports = {
       }
 
       await Log.destroy({
-        where: { UserId },
+        where: { UserId: id },
         force: true
       })
 

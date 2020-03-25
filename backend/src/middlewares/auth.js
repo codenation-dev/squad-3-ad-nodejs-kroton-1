@@ -120,16 +120,20 @@ module.exports = {
   },
   getIdByToken: (req, res, next) => {
     try {
-      const authorization = req.headers.authorization
-      if (!authorization) {
+      const token = req.headers.authorization
+      if (!token) {
         return res.status(401).json({ message: 'Token not provided' })
       }
-      const [bearer, token] = authorization.split(' ')
-      if (!bearer || !token) {
+
+      const [bearer, splitToken] = token.split(' ')
+      if (!bearer || !splitToken) {
+        return res.status(401).json({ message: 'Invalid token' })
+      }
+
+      const { userId: { id } } = decodeToken(token)
+      if (id === 0) {
         return res.status(401).json({ message: 'Invalid token' })
       } else {
-        const { userId: { id } } = decodeToken(authorization)
-
         req.locals = id
         next()
       }
