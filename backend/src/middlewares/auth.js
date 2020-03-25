@@ -104,22 +104,6 @@ module.exports = {
 
   authorize: (req, res, next) => {
     try {
-      const { authorization } = req.headers
-
-      if (!authorization) {
-        return res.status(401).json({ error: 'Token not provided' })
-      }
-      const isValidToken = decodeToken(authorization)
-      if (isValidToken) {
-        next()
-      }
-    } catch (error) {
-      console.log(error)
-      return res.status(500).json({ message: 'Internal Server Error' })
-    }
-  },
-  getIdByToken: (req, res, next) => {
-    try {
       const token = req.headers.authorization
       if (!token) {
         return res.status(401).json({ message: 'Token not provided' })

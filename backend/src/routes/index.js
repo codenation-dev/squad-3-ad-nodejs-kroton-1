@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const usersRoute = require('./users')
 const logsRoute = require('./logs')
-const { authorize, getIdByToken } = require('../middlewares/auth')
+const { authorize } = require('../middlewares/auth')
 
 router.get('/', (req, res) => {
   res.status(200).json({
@@ -12,6 +12,6 @@ router.get('/', (req, res) => {
 })
 
 router.use('/users', usersRoute)
-router.use('/logs', getIdByToken, authorize, logsRoute)
+router.use('/logs', authorize, logsRoute)
 
 module.exports = router
