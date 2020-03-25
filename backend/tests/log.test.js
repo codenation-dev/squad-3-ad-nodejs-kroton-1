@@ -11,31 +11,31 @@ const authorization = []
 const constantDate = new Date('2020-02-15T18:01:01.000Z')
 
 global.Date = class extends Date {
-  constructor() {
+  constructor () {
     return constantDate
   }
 }
 
-async function signUp(user) {
+async function signUp (user) {
   await request(app)
     .post('/users/signup')
     .send(user)
 }
 
-async function signIn(user) {
+async function signIn (user) {
   const { body: { token } } = await request(app)
     .post('/users/signin')
     .send(user)
   authorization.push(token)
 }
 
-async function createLog(log) {
+async function createLog (log) {
   return request(app)
     .post('/logs').send(log)
     .set('Authorization', `Bearer ${authorization[0]}`)
 }
 
-async function syncDB() {
+async function syncDB () {
   await sequelize.sync({ force: true })
   authorization.pop()
 }

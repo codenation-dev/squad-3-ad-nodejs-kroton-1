@@ -70,7 +70,7 @@ module.exports = {
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
-  
+
   restore: async (req, res) => {
     const { locals: { token } } = req
     const { userId: { id } } = decodeToken(token)
