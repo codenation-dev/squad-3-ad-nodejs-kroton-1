@@ -1,4 +1,4 @@
-[![Node.js](https://nodejs.org/static/images/logo-light.svg)](https://nodejs.org/)
+[![Node.js](https://nodejs.org/static/images/logo-light.svg | width=200 align)](https://nodejs.org/)
 
 [![Standard - JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
