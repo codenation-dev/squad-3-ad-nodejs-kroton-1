@@ -20,12 +20,14 @@ components:
 
 paths:
 
-  /logs/environment/{environment}:
+  /users/logs:
     get:
       security:
         - bearerAuth: []
-      summary: Get logs by environment
-      description: Get all logs of an environment that is passed in the url parameter
+      summary: Get all logs
+      description: Find and retrieve all the logs sotred by the user. Is necessary to especify 'Bearer' Token.
+      produces:
+        - application/json
       parameters:
         - in: header
           name: Authorization
@@ -34,23 +36,10 @@ paths:
             type: string
             required: true
             example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
-
-        - in: path
-          name: environment
-          type: string
-          required: true
-      produces:
-        - application/json
       responses:
         200:
-          description: Show all logs
+          description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Log'
-        200_:
-          description: Returns a message stating that there are no logs to show for this user
-
             type: object
             properties:
               total: 
@@ -102,46 +91,45 @@ paths:
                 example: Internal Server Error
 
   /users/signup:
-    post:
-      summary: Create user
-      description: Create a new user account to get access to the API
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      parameters:
-        - in: body
-          name: user
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-
-                example: There are no logs
-        500:
-          description: Returns a message stating that an error has occurred on the server
-                example: joao@email.com.br
-              password:
-                type: string
-                example: "123456"
-      responses:
-        201:
-          description: Returns the name, email and date when the user was created
-          schema:
-            $ref: '#/create_200'
-        406:
-          description: Returns the message stating that the data sent is invalid
-          schema:
-            $ref: '#/create_406'
-        409:
-          description: Returns the message stating that the email already exists
-          schema:
-            $ref: '#/create_409'
-        500:
-          description: Returns the message stating that an error has occurred on the server
-          schema:
-            $ref: '#/error_500'
+      post:
+        summary: Create user
+        description: Create a new user account to get access to the API
+        consumes:
+          - application/json
+        produces:
+          - application/json
+        parameters:
+          - in: body
+            name: user
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: João da Silva
+                email:
+                  type: string
+                  example: joao@email.com.br
+                password:
+                  type: string
+                  example: "123456"
+        responses:
+          201:
+            description: Returns the name, email and date when the user was created
+            schema:
+              $ref: '#/create_200'
+          406:
+            description: Returns the message stating that the data sent is invalid
+            schema:
+              $ref: '#/create_406'
+          409:
+            description: Returns the message stating that the email already exists
+            schema:
+              $ref: '#/create_409'
+          500:
+            description: Returns the message stating that an error has occurred on the server
+            schema:
+              $ref: '#/error_500'
 
   /users/signin:
     post:
@@ -155,9 +143,8 @@ paths:
           schema:
             type: object
             properties:
-              message:
+              email:
                 type: string
-                example: Internal server error
                 format: email
                 example: joao@email.com.br
               password:
@@ -226,31 +213,14 @@ paths:
                 type: string
                 example: Internal Server Error
 
-  /logs/restore/all:
+  /users/restore:
     post:
-      security:
-        - bearerAuth: []
-      summary: Restore all logs
-      description: Restore all logs created by the user
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-            required: true
       summary: Restore user account
       description: Reactivates a previouly disabled user account
       responses:
         200:
-          description: Returns a succesfull message when all logs of an user are restored
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: All logs restored successfully
-        200_:
-          description: Returns a message stating that there are no logs to restore for this user
+          description: OK
+
 
   /users:
     patch:
@@ -289,7 +259,7 @@ paths:
                 type: string
                 example: "12345678"
       responses:
-       200:
+        200:
           description: OK
           schema:
             type: object
@@ -388,6 +358,7 @@ paths:
           schema:
             $ref: '#/error_500'
 
+
   /users/hard:
     delete:
       security:
@@ -436,6 +407,7 @@ paths:
                 type: string
                 example: Internal Server Error
 
+
   /logs/sender/{senderApplication}:
     get:
       summary: Get logs by application
@@ -455,6 +427,7 @@ paths:
             items:
               $ref: '#/definitions/Log'
 
+
   /logs/environment/{environment}:
     get:
       summary: Get logs by environment
@@ -470,17 +443,10 @@ paths:
         200:
           description: OK
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: There are no logs
-        500:
-          description: Returns a message stating that an error has occurred on the server
-          schema:
             type: array
             items:
               $ref: '#/definitions/Log'
+
 
   /logs/level/{level}:
     get:
@@ -516,6 +482,7 @@ paths:
           description: Returns the message stating that an error has occurred on the server
           schema:
             $ref: '#/error_500'
+
   /logs:
      post:
       security:
@@ -523,7 +490,9 @@ paths:
       summary: Create logs
       description: Creates a new log associated with a user. The user id is provided by the token.
       consumes:
-        - application/json  
+        - application/json        
+      produces:
+        - application/json
       parameters:
         - in: header
           name: Authorization
@@ -610,6 +579,7 @@ paths:
               message:
                 type: string
                 example: Internal Server Error
+
 
   /logs/id/{id}:
     delete:
@@ -712,8 +682,75 @@ paths:
             properties:
               message:
                 type: string
-                example: Internal server error
+                example: Internal Server Error
 
+  /logs/all/hard:
+      delete:
+        security:
+          - bearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: You need pass the Authorization header using the Bearer schema.
+            schema:
+              type: string
+              required: true
+              example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+        summary: Hard Delete for all logs from user. 
+        description: Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.
+        responses:
+          200:
+            description: Returns the body with a message of deletation 
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Deleted successfully, this action cannot be undone
+          _200:
+            description: Returns a message that did not find the logs 
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: There are no logs
+          401:
+            description: Returns Unauthorized
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Invalid token
+          _401:
+            description: Returns Unauthorized
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Token not provided
+          500:
+            description: Returns the message stating that an error has occurred on the server
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Internal Server Error
 
 # return patterns for logs
 create_200:
@@ -806,75 +843,6 @@ error_500:
     message:
       type: string
       example: Internal Server Error
-
-  /logs/all/hard:
-      delete:
-        security:
-          - bearerAuth: []
-        produces:
-          - application/json
-        parameters:
-          - in: header
-            name: Authorization
-            description: You need pass the Authorization header using the Bearer schema.
-            schema:
-              type: string
-              required: true
-              example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
-        summary: Hard Delete for all logs from user. 
-        description: Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.
-        responses:
-          200:
-            description: Returns the body with a message of deletation 
-            produces:
-              - application/json
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: Deleted successfully, this action cannot be undone
-          _200:
-            description: Returns a message that did not find the logs 
-            produces:
-              - application/json
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: There are no logs
-          401:
-            description: Returns Unauthorized
-            produces:
-              - application/json
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: Invalid token
-          _401:
-            description: Returns Unauthorized
-            produces:
-              - application/json
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: Token not provided
-          500:
-            description: Returns the message stating that an error has occurred on the server
-            produces:
-              - application/json
-            schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: Internal Server Error
-
 definitions:
   User:
     type: object
