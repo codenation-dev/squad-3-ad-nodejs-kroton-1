@@ -6,17 +6,16 @@ const { authorize } = require('../middlewares/auth')
 const swaggerUi = require('swagger-ui-express')
 const YAML = require('yamljs')
 const swaggerDocument = YAML.load('./swagger.yaml')
-
-router.use('/api-docs', swaggerUi.serve)
-router.get('/api-docs', swaggerUi.setup(swaggerDocument))
+const port = process.env.PORT
 
 router.get('/', (req, res) => {
   res.status(200).json({
-    users: 'http://localhost:8080/users',
-    logs: 'http://localhost:8080/logs'
+    docs: `http://localhost:${port}/api-docs`
   })
 })
 
+router.use('/api-docs', swaggerUi.serve)
+router.get('/api-docs', swaggerUi.setup(swaggerDocument))
 router.use('/users', usersRoute)
 router.use('/logs', authorize, logsRoute)
 

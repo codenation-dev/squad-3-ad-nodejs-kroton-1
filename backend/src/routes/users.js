@@ -3,7 +3,7 @@ const router = express.Router()
 const controller = require('../controllers/UserController')
 const { authenticate, authenticateForRestoreUser, authorizeForRestoreUser, authorize } = require('../middlewares/auth')
 
-router.get('/logs', authorize, controller.getAllLogs) // OK
+router.get('/logs', authorize, controller.getAllLogs) // PENDENTE DOC
 
 router.post('/signup', controller.create) // gui
 
