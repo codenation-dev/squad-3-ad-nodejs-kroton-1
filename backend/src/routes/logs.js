@@ -20,6 +20,6 @@ router.delete('/all', controller.deleteAllByUser) // henri
 
 router.delete('/hard/:id', controller.hardDeleteById) // juliano
 
-router.delete('/all/hard', controller.hardDeleteAllByUser) //  luane
+router.delete('/all/hard', controller.hardDeleteAllByUser) //  henrique
 
 module.exports = router

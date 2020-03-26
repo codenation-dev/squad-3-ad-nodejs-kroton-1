@@ -70,9 +70,6 @@ paths:
           description: User successfully created
           schema:
             $ref: '#/definitions/User'
-          
-        
-
 
   /users/signin:
     post:
@@ -165,9 +162,16 @@ paths:
 
   /logs/environment/{environment}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get logs by environment
-      description: Get all the logs with the same environment passed in the url parameter
+      description: Get all logs of an environment. Passed in the url parameter.
       parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
         - in: path
           name: environment
           type: string
@@ -176,11 +180,15 @@ paths:
         - application/json
       responses:
         200:
-          description: OK
+          description: Show all logs
           schema:
             type: array
             items:
               $ref: '#/definitions/Log'
+        200_:
+          description: Request is valid, but there are no logs to show
+        500:
+          description: Internal server error
 
 
   /logs/level/{level}:
