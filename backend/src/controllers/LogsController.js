@@ -89,11 +89,15 @@ module.exports = {
 
   restoreById: async (req, res) => {
     try {
-      const { params: id } = req
+      const { params: { id } } = req
       const UserId = req.locals
+      console.log(id)
+      console.log(UserId)
       const isLogFound = await Log.findOne({
-        where: UserId,
-        id,
+        where: {
+          UserId,
+          id
+        },
         paranoid: false
       })
       if (!isLogFound) {
@@ -187,7 +191,8 @@ module.exports = {
       const { params: { id } } = req
       const UserId = req.locals
       const logExist = await Log.findOne({
-        where: { UserId, id }
+        where: { UserId, id },
+        paranoid: false
       })
 
       if (!logExist) {
@@ -210,7 +215,8 @@ module.exports = {
     try {
       const { locals: id } = req
       const logs = await Log.findAll({
-        where: { UserId: id }
+        where: { UserId: id },
+        paranoid: false
       })
 
       const hasLogs = logs.length

@@ -76,25 +76,30 @@ module.exports = {
   },
 
   restore: async (req, res) => {
-    const { locals: { token } } = req
-    const { userId: { id } } = decodeToken(token)
+    try {
+      const { locals: { token } } = req
+      const { userId: { id } } = decodeToken(token)
 
-    const user = await User.findOne({
-      where: {
-        id
-      },
-      paranoid: false
-    })
+      const user = await User.findOne({
+        where: {
+          id
+        },
+        paranoid: false
+      })
 
-    if (!user) {
-      return res.status(200).json({ message: 'There is no user' })
+      if (!user) {
+        return res.status(200).json({ message: 'There is no user' })
+      }
+
+      await User.restore({
+        where: { id }
+      })
+
+      return res.status(200).json({ message: 'User restored successfully.' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
-
-    await User.restore({
-      where: { id }
-    })
-
-    return res.status(200).json({ message: 'User restored successfully.' })
   },
 
   update: async (req, res) => {
@@ -175,17 +180,19 @@ module.exports = {
   hardDelete: async (req, res) => {
     try {
       const { locals: id } = req
+      console.log(id)
 
       const userExists = await User.findOne({
-        where: { id }
+        where: { id },
+        paranoid: false
       })
 
       if (!userExists) {
         return res.status(200).json({ message: 'There is no user' })
       }
-
       await Log.destroy({
-        where: { UserId: id }
+        where: { UserId: id },
+        force: true
       })
 
       await User.destroy({

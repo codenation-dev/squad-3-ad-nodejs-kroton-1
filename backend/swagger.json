@@ -312,47 +312,119 @@
     },
     "/users/restore": {
       "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
+        "summary": "User login",
+        "description": "Authenticate an existing user returning a token for API requests",
+        "produces": [
+          "application/json"
         ],
-        "summary": "Restore all logs",
-        "description": "Restore an user",
         "parameters": [
           {
-            "in": "header",
-            "name": "Authorization",
+            "in": "body",
+            "name": "User credentials",
             "schema": {
-              "type": "string",
-              "required": true
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "joao@email.com.br"
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "example": "123456"
+                }
+              }
             }
           }
         ],
         "responses": {
-          "200": null,
-          "412": {
-            "description": "Former user wasn't found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": "string",
-                    "example": "There is no user"
-                  }
+          "200": {
+            "description": "Returns OK",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "example": "User restored successfully."
                 }
               }
             }
           },
-          "description": "Restore the user account if it existed previously. Otherwise do nothing.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": "string",
-                  "example": "User restored successfully"
+          "401": {
+            "description": "Returns Unauthorized",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Incorrect password"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "Returns Not Acceptable",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "You are input wrong data then necessary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returns the message stating that an error has occurred on the server",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          },
+          "_200": {
+            "description": "Returns Bad Request",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There is no user"
+                }
+              }
+            }
+          },
+          "_406": {
+            "description": "Returns Not Acceptable",
+            "produces": [
+              "application/json"
+            ],
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Data values are not valid"
                 }
               }
             }
@@ -1362,72 +1434,77 @@
         }
       }
     },
-    "/hard/{id}": null,
-    "delete": {
-      "security": "bearerAuth",
-      "summary": "Completely remove a log",
-      "description": "Removes a log with the provided ID without possibility of recovery",
-      "produces": [
-        "application/json"
-      ],
-      "parameters": [
-        {
-          "in": "header",
-          "name": "Authorization",
-          "schema": {
-            "type": "string",
-            "required": true
+    "logs/hard/{id}": {
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
           }
-        },
-        {
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": "string"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Remove the log with the matching ID if it existed previously. Otherwise do nothing.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Deleted successfully, this action cannot be undone"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "204": {
-          "description": "There is no log with informed ID",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "There is no log"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Error on the server side",
-          "content": {
-            "application/json": null,
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
-              "type": "object",
-              "properties": {
-                "message": "string",
-                "example": "Internal Server Error"
+              "type": "string",
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remove the log with the matching ID if it existed previously. Otherwise do nothing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Deleted successfully, this action cannot be undone"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "There is no log with informed ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There is no log"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on the server side",
+            "content": {
+              "application/json": null,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": "string",
+                  "example": "Internal Server Error"
+                }
               }
             }
           }
