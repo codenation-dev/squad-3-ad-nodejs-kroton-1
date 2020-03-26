@@ -20,7 +20,6 @@
     "mariadb": "^2.2.0",
     "sequelize": "^5.21.5",
     "swagger-ui-express": "^4.1.4",
-    "yamljs": "^0.3.0",
     "yup": "^0.28.3"
   },
   "devDependencies": {
