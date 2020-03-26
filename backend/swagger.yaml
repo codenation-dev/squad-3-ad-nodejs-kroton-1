@@ -76,7 +76,7 @@ paths:
             required: true
       responses:
         200:
-          description: Returns a succesfull message when all logs from user are restored
+          description: Returns a succesfull message when all logs of an user are restored
           schema:
             type: object
             properties:
