@@ -20,6 +20,58 @@ components:
 
 paths:
 
+  /logs/environment/{environment}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get logs by environment
+      description: Get all logs of an environment that is passed in the url parameter
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
+        - in: path
+          name: environment
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Show all logs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+        200_:
+          description: Request is valid, but there are no logs to show
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: There are no logs
+        500:
+          description: Returns a message stating that an error has occurred on the server
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal server error
+
+  /logs/restore/all:
+    post:
+      summary: Restore all logs
+      description: Restore all logs created by the user
+      responses:
+        200:
+          description: OK
+        500:
+          description: sdkjf
+
   /users/logs:
     get:
       security:
@@ -158,38 +210,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Log'
-
-
-  /logs/environment/{environment}:
-    get:
-      security:
-        - bearerAuth: []
-      summary: Get logs by environment
-      description: Get all logs of an environment. Passed in the url parameter.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-            required: true
-        - in: path
-          name: environment
-          type: string
-          required: true
-      produces:
-        - application/json
-      responses:
-        200:
-          description: Show all logs
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Log'
-        200_:
-          description: Request is valid, but there are no logs to show
-        500:
-          description: Internal server error
-
 
   /logs/level/{level}:
     get:
