@@ -7,14 +7,14 @@ router.get('/logs', authorize, controller.getAllLogs) // OK
 
 router.post('/signup', controller.create) // gui
 
-router.post('/signin', authenticate) // henrique
+router.post('/signin', authenticate)
 
 router.post('/restore', authenticateForRestoreUser, authorizeForRestoreUser, controller.restore) // juliano
 
-router.patch('/', authorize, controller.update) // henrique
+router.patch('/', authorize, controller.update)
 
 router.delete('/', authorize, controller.delete) // gui
 
-router.delete('/hard', authorize, controller.hardDelete) // henrique
+router.delete('/hard', authorize, controller.hardDelete)
 
 module.exports = router
