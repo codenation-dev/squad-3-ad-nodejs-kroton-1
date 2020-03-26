@@ -80,7 +80,7 @@ module.exports = {
         UserId: id
       })
 
-      return res.status(200).json({ createdLog })
+      return res.status(201).json({ createdLog })
     } catch (error) {
       console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
@@ -112,23 +112,27 @@ module.exports = {
   },
 
   restoreAllByUser: async (req, res) => {
-    const { locals: id } = req
+    try {
+      const { locals: id } = req
 
-    const logs = await Log.findAll({
-      where: { UserId: id },
-      paranoid: false
-    })
+      const logs = await Log.findAll({
+        where: { UserId: id },
+        paranoid: false
+      })
 
-    const hasLogs = logs.length
-    if (!hasLogs) {
-      return res.status(200).json({ message: 'There are no logs' })
+      const hasLogs = logs.length
+      if (!hasLogs) {
+        return res.status(200).json({ message: 'There are no logs' })
+      }
+
+      await Log.restore({
+        where: { UserId: id }
+      })
+
+      return res.status(200).json({ message: 'All logs restored successfully' })
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal Server Error' })
     }
-
-    await Log.restore({
-      where: { UserId: id }
-    })
-
-    return res.status(200).json({ message: 'All logs restored successfully' })
   },
 
   deleteById: async (req, res) => {

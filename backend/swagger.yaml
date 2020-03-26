@@ -227,7 +227,7 @@ paths:
             required: true
             example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
         - in: body
-          name: User body
+          name: User data to be updated
           schema:
             type: object
             properties:
