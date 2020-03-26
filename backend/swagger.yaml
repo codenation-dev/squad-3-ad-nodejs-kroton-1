@@ -127,9 +127,21 @@ paths:
                 example: "123456"
       responses:
         201:
-          description: User successfully created
+          description: Returns the name, email and date when the user was created
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/create_200'
+        406:
+          description: Returns the message stating that the data sent is invalid
+          schema:
+            $ref: '#/create_406'
+        409:
+          description: Returns the message stating that the email already exists
+          schema:
+            $ref: '#/create_409'
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          schema:
+            $ref: '#/error_500'
 
   /users/signin:
     post:
@@ -235,7 +247,6 @@ paths:
             type: object
             properties:
               message:
-
                 type: string
                 example: All logs restored successfully
         200_:
@@ -349,12 +360,33 @@ paths:
         
               
     delete:
+      security:
+        - bearerAuth: []
       summary: Disable user
       description: Executes a soft delete disabling the user account
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
       responses:
+        200_:
+          description: Returns the message stating that the user no longer exists
+          schema:
+            $ref: '#/delete_200_'
         200:
-          description: OK
-
+          description: Returns the message stating that the user has been deleted
+          schema:
+            $ref: '#/delete_200'
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          schema:
+            $ref: '#/error_500'
 
   /users/hard:
     delete:
@@ -404,7 +436,6 @@ paths:
                 type: string
                 example: Internal Server Error
 
-
   /logs/sender/{senderApplication}:
     get:
       summary: Get logs by application
@@ -423,7 +454,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Log'
-
 
   /logs/environment/{environment}:
     get:
@@ -452,7 +482,40 @@ paths:
             items:
               $ref: '#/definitions/Log'
 
-
+  /logs/level/{level}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get logs by level
+      description: Get all the logs with the same level passed in the url parameter
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
+        - in: path
+          name: level
+          schema:
+            type: string
+            required: true
+      responses:
+        200:
+          description: Returns all logs by level
+          schema:
+            $ref: '#/getByLevel_200'
+        200_:
+          description: Returns the message stating that there are no logs
+          schema:
+            $ref: '#/getByLevel_200_'
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          schema:
+            $ref: '#/error_500'
   /logs:
      post:
       security:
@@ -460,9 +523,7 @@ paths:
       summary: Create logs
       description: Creates a new log associated with a user. The user id is provided by the token.
       consumes:
-        - application/json        
-      produces:
-        - application/json
+        - application/json  
       parameters:
         - in: header
           name: Authorization
@@ -550,22 +611,40 @@ paths:
                 type: string
                 example: Internal Server Error
 
-
   /logs/id/{id}:
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete log
       description: Delete the log with the id passed in the url
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
         - in: path
           name: id
-          type: string
-          required: true
+          schema:
+            type: string
+            required: true
       responses:
         200:
-          description: OK
-          schema: 
-            $ref: '#/definitions/Log'
-
+          description: Returns the message stating that the log has been deleted
+          schema:
+            $ref: '#/deleteById_200'
+        200_:
+          description: Returns the message stating that there is no log
+          schema:
+            $ref: '#/deleteById_200'
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          schema:
+            $ref: '#/error_500'
 
   /logs/all:
     delete:
@@ -634,6 +713,99 @@ paths:
               message:
                 type: string
                 example: Internal server error
+
+
+# return patterns for logs
+create_200:
+  type: object
+  properties:
+    message:
+      type: string
+      example: User created successfully
+    data:
+      type: string
+      example:
+        userName: João da Silva 
+        userEmail: joao@email.com.br
+        createdAt: '2020-03-25T22:21:34.759Z'
+create_406:
+  type: object
+  properties:
+    message:
+      type: string
+      example: Invalid data
+create_409:
+  type: object
+  properties:
+    message:
+      type: string
+      example: User email already exists
+delete_200_:
+  type: object
+  properties:
+    message:
+      type: string
+      example: There is no user
+delete_200:
+  type: object
+  properties:
+    message:
+      type: string
+      example: Deleted succesfully
+getByLevel_200:
+  type: object
+  properties:
+    id:
+      type: number
+      example: 1
+    level: 
+      type: string
+      example: WARN
+    description: 
+      type: string
+      example: Application restarted
+    senderApplication: 
+      type: string
+      example: Server load monitor
+    sendDate: 
+      type: string
+      example: 11/26/2019 15:00
+    environment: 
+      type: string
+      example: homologation
+    UserId:
+      type: number
+      example: 1
+    updatedAt:
+      type: date-time
+      example: 2020-03-26T00:21:40.039Z
+    createdAt: 
+      type: date-time
+      example: 2020-03-26T00:21:40.039Z
+getByLevel_200_:
+  type: object
+  properties:
+    message:
+      type: string
+      example: There are no logs
+deleteById_200:
+  type: object
+  properties:
+    message:
+      type: string
+      example: Deleted successfully
+deleteById_200_:
+  type: object
+  properties:
+    message:
+      type: string
+      example: There is no logs
+error_500:
+  type: object
+  properties:
+    message:
+      type: string
+      example: Internal Server Error
 
   /logs/all/hard:
       delete:
@@ -707,6 +879,10 @@ definitions:
   User:
     type: object
     properties:
+      id:
+        type: integer
+        format: int64
+        example: 123
       name:
         type: string
         example: João da Silva
@@ -716,15 +892,18 @@ definitions:
       password:
         type: string
         format: password
-        example: "123456"
+        example: 652a80db6fab5930dabf7d4fb7db5d67
     required:
       - name
       - email
       - password
-  
   Log:
     type: object
     properties:
+      id:
+        type: integer
+        format: int64
+        example: 321
       level:
         type: string
         enum: [FATAL, ERROR, WARN, INFO, DEBUG, TRACE, ALL, OFF]
@@ -741,6 +920,9 @@ definitions:
         type: string
         enum: [production, homologation]
         example: homologation
+      userId:
+        type: integer
+        example: 123
     required: 
       - level
       - description

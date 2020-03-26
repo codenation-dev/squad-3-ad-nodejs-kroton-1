@@ -9,13 +9,17 @@ module.exports = {
   getAllLogs: async (req, res) => {
     try {
       const { locals: id } = req
-      const { dataValues: { Logs } } = await User.findOne({
+      const isLogsFound = await User.findOne({
         where: { id },
         include: Log
       })
 
-      const hasLogs = Logs.length
+      if (isLogsFound === null) {
+        return res.status(401).json({ message: 'Invalid token' })
+      }
+      const { dataValues: { Logs } } = isLogsFound
 
+      const hasLogs = Logs.length
       if (!hasLogs) {
         return res.status(200).json({ message: 'There are no logs' })
       }
@@ -59,7 +63,7 @@ module.exports = {
         })
 
         return res.status(201).json({
-          message: 'User created successfully!',
+          message: 'User created successfully',
           data: { userName, userEmail, createdAt }
         })
       } else {
