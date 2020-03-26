@@ -31,16 +31,64 @@ paths:
       parameters:
         - in: header
           name: Authorization
+          description: You need pass the Authorization header using the Bearer schema.
           schema:
             type: string
             required: true
+            example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
       responses:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Log'
+            type: object
+            properties:
+              total: 
+                type: number
+                example: 1
+              Logs:
+                type: array
+                items:
+                  $ref: '#/definitions/Log'
+        _200:
+          description: Returns a message that did not find the logs 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: There are no logs
+        401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid token
+        _401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Token not provided
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
 
   /users/signup:
     post:
@@ -70,9 +118,6 @@ paths:
           description: User successfully created
           schema:
             $ref: '#/definitions/User'
-          
-        
-
 
   /users/signin:
     post:
@@ -135,6 +180,26 @@ paths:
               message:
                 type: string
                 example: Data values are not valid
+        401:
+          description: Returns Unauthorized 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Incorrect password
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
 
   /users/restore:
     post:
@@ -200,6 +265,26 @@ paths:
               message:
                 type: string
                 example: Deleted successfully, this action cannot be undone
+        _200:
+          description: Returns a message that did not find a user 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: There is no user
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
 
 
   /logs/sender/{senderApplication}:
@@ -263,12 +348,101 @@ paths:
 
 
   /logs:
-    post:
-      summary: nonono
-      description: nonono
+     post:
+      security:
+        - bearerAuth: []
+      summary: Create logs
+      description: Creates a new log associated with a user. The user id is provided by the token.
+      consumes:
+        - application/json        
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: You need pass the Authorization header using the Bearer schema.
+          schema:
+            type: string
+            required: true
+            example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+        - in: body
+          name: Logs body
+          schema:
+            type: object
+            properties:
+              level:
+                type: string
+                example: WARN
+              description:
+                type: string
+                example: Application restarted
+              senderApplication:
+                type: string
+                example: Server load monitor
+              sendDate:
+                type: string
+                example: 11/26/2019 15:00
+              environment:
+                type: string
+                example: homologation
       responses:
         200:
-          description: OK
+          description: Returns OK
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              createdLog:
+                type: object
+                properties:
+                    id:
+                      type: number
+                      example: 1
+                    level: 
+                      type: string
+                      example: WARN
+                    description: 
+                      type: string
+                      example: Application restarted
+                    senderApplication: 
+                      type: string
+                      example: Server load monitor
+                    sendDate: 
+                      type: string
+                      example: 11/26/2019 15:00
+                    environment: 
+                      type: string
+                      example: homologation
+                    UserId:
+                      type: number
+                      example: 1
+                    updatedAt:
+                      type: date-time
+                      example: 2020-03-26T00:21:40.039Z
+                    createdAt: 
+                      type: date-time
+                      example: 2020-03-26T00:21:40.039Z
+        406:
+          description: Returns Not Acceptable 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Ivalid data
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
 
 
   /logs/id/{id}:
@@ -289,11 +463,71 @@ paths:
 
   /logs/all:
     delete:
-      summary: Delete logs
-      description: Delete all the logs created by the user
+      security:
+        - bearerAuth: []
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: You need pass the Authorization header using the Bearer schema.
+          schema:
+            type: string
+            required: true
+            example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+      summary: Soft Delete for all logs from user. 
+      description: Delete al the logs from a user. The user id will be provided by the token.
       responses:
         200:
-          description: OK
+          description: Returns the body with a message of deletation 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Deleted successfully
+        _200:
+          description: Returns a message that did not find the logs 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: There are no logs
+        401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid token
+        _401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Token not provided
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
 
 
 definitions:
