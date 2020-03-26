@@ -91,45 +91,45 @@ paths:
                 example: Internal Server Error
 
   /users/signup:
-      post:
-        summary: Create user
-        description: Create a new user account to get access to the API
-        consumes:
-          - application/json
-        produces:
-          - application/json
-        parameters:
-          - in: body
-            name: user
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: João da Silva
-                email:
-                  type: string
-                  example: joao@email.com.br
-                password:
-                  type: string
-                  example: "123456"
-        responses:
-          201:
-            description: Returns the name, email and date when the user was created
-            schema:
-              $ref: '#/create_200'
-          406:
-            description: Returns the message stating that the data sent is invalid
-            schema:
-              $ref: '#/create_406'
-          409:
-            description: Returns the message stating that the email already exists
-            schema:
-              $ref: '#/create_409'
-          500:
-            description: Returns the message stating that an error has occurred on the server
-            schema:
-              $ref: '#/error_500'
+    post:
+      summary: Create user
+      description: Create a new user account to get access to the API
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: João da Silva
+              email:
+                type: string
+                example: joao@email.com.br
+              password:
+                type: string
+                example: "123456"
+      responses:
+        201:
+          description: Returns the name, email and date when the user was created
+          schema:
+            $ref: '#/create_200'
+        406:
+          description: Returns the message stating that the data sent is invalid
+          schema:
+            $ref: '#/create_406'
+        409:
+          description: Returns the message stating that the email already exists
+          schema:
+            $ref: '#/create_409'
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          schema:
+            $ref: '#/error_500'
 
   /users/signin:
     post:
@@ -215,11 +215,10 @@ paths:
 
   /users/restore:
     post:
-      security: bearerAuth
-      summary: Restore user account
-      description: Reactivates a previously disabled user account
-      produces:
-        - application/json
+      security:
+        - bearerAuth: []
+      summary: Restore all logs
+      description: Restore an user
       parameters:
         - in: header
           name: Authorization
@@ -228,14 +227,14 @@ paths:
             required: true
       responses:
         200:
-          description: Restore the user account if it existed previously. Otherwise do nothing.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message: string
-                  example: User restored successfully
+        description: Restore the user account if it existed previously. Otherwise do nothing.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message: string
+                example: User restored successfully
         # a resposta de cima já cobre os dois casos, onde o usuario existe ou não
         # em example colocamos uma das respostas possíveis, mas qualquer uma é um código 200 então não importa.
         # ou poderiamos alterar o status code retornado de 200 para 412 (precondition failed)
@@ -473,11 +472,10 @@ paths:
 
   /logs/restore/id/{id}:
     post:
-      security: bearerAuth
+      security:
+        - bearerAuth: []
       summary: Restore a log
       description: Restore a log by an informed ID
-      produces:
-        - application/json
       parameters:
         - in: header
           name: Authorization
@@ -522,11 +520,10 @@ paths:
 
   /logs/sender/{senderApplication}:
     get:
-      security: bearerAuth
+      security:
+        - bearerAuth: []
       summary: Get logs by application
-      description: Get all the logs for the application passed in the url parameter
-      produces:
-        - application/json
+      description: Get all the logs for the application passed in the url parameter 
       parameters:
         - in: header
           name: Authorization
