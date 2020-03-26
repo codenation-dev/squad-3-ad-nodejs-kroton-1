@@ -34,7 +34,11 @@ npm run docker
 npm start
 ```
 
-A documentação da API pode ser encontrada em: `http://localhost:8080/api-docs`
+## Visualizar a documentação da API
+
+Com o servidor local rodando basta acessar:
+
+[API DOCS - Swagger](http://localhost:8080/api-docs)
 
 ## Considerações
 
