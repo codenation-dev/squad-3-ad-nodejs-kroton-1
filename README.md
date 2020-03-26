@@ -34,6 +34,8 @@ npm run docker
 npm start
 ```
 
+A documentação da API pode ser encontrada em: `http://localhost:8080/api-docs`
+
 ## Considerações
 
 Este é o Projeto Final do programa de aceleração de carreiras AceleraDev, promovido pela CodeNation com foco na tecnologia Node.js e apoiado pela empresa Kroton Educacional.
