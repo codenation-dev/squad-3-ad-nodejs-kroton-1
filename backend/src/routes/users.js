@@ -11,7 +11,7 @@ router.post('/signin', authenticate)
 
 router.post('/restore', authenticateForRestoreUser, authorizeForRestoreUser, controller.restore) // juliano
 
-router.patch('/', authorize, controller.update) // henri
+router.patch('/', authorize, controller.update)
 
 router.delete('/', authorize, controller.delete) // gui
 
