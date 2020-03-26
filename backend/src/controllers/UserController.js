@@ -135,7 +135,7 @@ module.exports = {
 
       const { status, message } = await updateByItem(dataToBeUpdated.join(), body, id)
 
-      res.status(status).json({ message })
+      return res.status(status).json({ message })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })

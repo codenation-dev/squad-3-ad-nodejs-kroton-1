@@ -218,18 +218,105 @@ paths:
         - application/json
       produces:
        - application/json
+      parameters:
+        - in: header
+          name: Authorization
+          description: You need pass the Authorization header using the Bearer schema.
+          schema:
+            type: string
+            required: true
+            example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+        - in: body
+          name: User body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: João da Silva Sauro
+              email:
+                type: string
+                example: joao_sauro@email.com.br
+              oldPassword:
+                type: string
+                example: "123456"
+              newPassword:
+                type: string
+                example: "12345678"
+              confirmPassword:
+                type: string
+                example: "12345678"
       responses:
         200:
           description: OK
           schema:
             type: object
             properties:
-              name:
+              message:
                 type: string
-                example: João da Silva
-              email:
+                example: Updated sucessfully!
+        204:
+          description: Returns a message that did not find a user 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
                 type: string
-                example: joao@email.com.br
+                example: There is no user
+        401:
+          description: Returns Unauthorized 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Password does not match
+        406:
+          description: Returns Not Acceptable 
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Ivalid data
+        _401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid token
+        __401:
+          description: Returns Unauthorized
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Token not provided
+        500:
+          description: Returns the message stating that an error has occurred on the server
+          produces:
+            - application/json
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Internal Server Error
+        
+              
     delete:
       summary: Disable user
       description: Executes a soft delete disabling the user account
