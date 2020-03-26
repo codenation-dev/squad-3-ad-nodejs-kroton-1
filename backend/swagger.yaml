@@ -46,7 +46,7 @@ paths:
             items:
               $ref: '#/definitions/Log'
         200_:
-          description: Request is valid, but there are no logs to show
+          description: Returns a message stating that there are no logs to show for this user
           schema:
             type: object
             properties:
