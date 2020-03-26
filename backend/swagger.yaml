@@ -529,6 +529,73 @@ paths:
                 type: string
                 example: Internal Server Error
 
+  /logs/all/hard:
+      delete:
+        security:
+          - bearerAuth: []
+        produces:
+          - application/json
+        parameters:
+          - in: header
+            name: Authorization
+            description: You need pass the Authorization header using the Bearer schema.
+            schema:
+              type: string
+              required: true
+              example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+        summary: Hard Delete for all logs from user. 
+        description: Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.
+        responses:
+          200:
+            description: Returns the body with a message of deletation 
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Deleted successfully, this action cannot be undone
+          _200:
+            description: Returns a message that did not find the logs 
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: There are no logs
+          401:
+            description: Returns Unauthorized
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Invalid token
+          _401:
+            description: Returns Unauthorized
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Token not provided
+          500:
+            description: Returns the message stating that an error has occurred on the server
+            produces:
+              - application/json
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Internal Server Error
 
 definitions:
   User:
