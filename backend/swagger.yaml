@@ -20,14 +20,12 @@ components:
 
 paths:
 
-  /users/logs:
+  /logs/environment/{environment}:
     get:
       security:
         - bearerAuth: []
-      summary: Get all logs
-      description: Find and retrieve all the logs sotred by the user. Is necessary to especify 'Bearer' Token.
-      produces:
-        - application/json
+      summary: Get logs by environment
+      description: Get all logs of an environment that is passed in the url parameter
       parameters:
         - in: header
           name: Authorization
@@ -36,10 +34,23 @@ paths:
             type: string
             required: true
             example: Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA
+
+        - in: path
+          name: environment
+          type: string
+          required: true
+      produces:
+        - application/json
       responses:
         200:
-          description: OK
+          description: Show all logs
           schema:
+            type: array
+            items:
+              $ref: '#/definitions/Log'
+        200_:
+          description: Returns a message stating that there are no logs to show for this user
+
             type: object
             properties:
               total: 
@@ -104,11 +115,12 @@ paths:
           schema:
             type: object
             properties:
-              name:
+              message:
                 type: string
-                example: João da Silva
-              email:
-                type: string
+
+                example: There are no logs
+        500:
+          description: Returns a message stating that an error has occurred on the server
                 example: joao@email.com.br
               password:
                 type: string
@@ -131,8 +143,9 @@ paths:
           schema:
             type: object
             properties:
-              email:
+              message:
                 type: string
+                example: Internal server error
                 format: email
                 example: joao@email.com.br
               password:
@@ -201,14 +214,32 @@ paths:
                 type: string
                 example: Internal Server Error
 
-  /users/restore:
+  /logs/restore/all:
     post:
+      security:
+        - bearerAuth: []
+      summary: Restore all logs
+      description: Restore all logs created by the user
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
       summary: Restore user account
       description: Reactivates a previouly disabled user account
       responses:
         200:
-          description: OK
+          description: Returns a succesfull message when all logs of an user are restored
+          schema:
+            type: object
+            properties:
+              message:
 
+                type: string
+                example: All logs restored successfully
+        200_:
+          description: Returns a message stating that there are no logs to restore for this user
 
   /users:
     patch:
@@ -247,7 +278,7 @@ paths:
                 type: string
                 example: "12345678"
       responses:
-        200:
+       200:
           description: OK
           schema:
             type: object
@@ -409,25 +440,13 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Log'
-
-
-  /logs/level/{level}:
-    get:
-      security:
-          - bearerAuth: []
-      summary: Get logs by level
-      description: Get all the logs with the same level passed in the url parameter
-      parameters:
-        - in: path
-          name: level
-          type: string
-          required: true
-      responses:
-        200:
-          description: OK
+            type: object
+            properties:
+              message:
+                type: string
+                example: There are no logs
+        500:
+          description: Returns a message stating that an error has occurred on the server
           schema:
             type: array
             items:
@@ -614,7 +633,7 @@ paths:
             properties:
               message:
                 type: string
-                example: Internal Server Error
+                example: Internal server error
 
   /logs/all/hard:
       delete:
