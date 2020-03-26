@@ -4,8 +4,7 @@ const usersRoute = require('./users')
 const logsRoute = require('./logs')
 const { authorize } = require('../middlewares/auth')
 const swaggerUi = require('swagger-ui-express')
-const YAML = require('yamljs')
-const swaggerDocument = YAML.load('./swagger.yaml')
+const swaggerDocument = require('../../swagger.json')
 const port = process.env.PORT
 
 router.get('/', (req, res) => {
