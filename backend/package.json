@@ -1,6 +1,6 @@
 {
   "name": "centralerros",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Armazena e recupera logs de aplições",
   "main": "./src/bin/server.js",
   "scripts": {
