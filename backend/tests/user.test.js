@@ -126,7 +126,7 @@ describe('The API on /users/signup Endpoint at POST method should...', () => {
         userEmail: 'raulzito@gmail.com',
         userName: 'Raul Seixas'
       },
-      message: 'User created successfully!'
+      message: 'User created successfully'
     })
   })
 

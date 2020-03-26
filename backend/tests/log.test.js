@@ -204,7 +204,7 @@ describe('The API on /logs endpoint at POST method should...', () => {
   test('returns 200 as status code and the result of the new log created', async () => {
     const res = await createLog(mockLogs.validLog)
 
-    expect(res.statusCode).toEqual(200)
+    expect(res.statusCode).toEqual(201)
     expect(res.body).toEqual(expectedLogs.oneLog)
   })
 
