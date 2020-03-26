@@ -26,7 +26,6 @@ module.exports = {
 
       return res.status(200).json({ total: hasLogs, Logs })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -70,7 +69,6 @@ module.exports = {
         return res.status(406).json({ message: 'Invalid data' })
       }
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -97,7 +95,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'User restored successfully.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -146,7 +143,6 @@ module.exports = {
 
       return res.status(status).json({ message })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -172,7 +168,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted succesfully' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -180,7 +175,6 @@ module.exports = {
   hardDelete: async (req, res) => {
     try {
       const { locals: id } = req
-      console.log(id)
 
       const userExists = await User.findOne({
         where: { id },
@@ -204,7 +198,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   }

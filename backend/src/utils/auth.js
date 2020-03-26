@@ -12,7 +12,6 @@ module.exports = {
       const [, tokenSplited] = token.split(' ')
       return jwt.verify(tokenSplited, process.env.SECRET)
     } catch (error) {
-      console.log(error)
       return { userId: { id: 0 }, iat: 0, exp: 0 }
     }
   }

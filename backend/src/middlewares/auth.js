@@ -36,7 +36,6 @@ module.exports = {
         return res.status(401).json({ message: 'Incorrect password' })
       }
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -80,7 +79,6 @@ module.exports = {
         return res.status(401).json({ message: 'Incorrect password' })
       }
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -97,7 +95,6 @@ module.exports = {
         next()
       }
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -122,7 +119,6 @@ module.exports = {
         next()
       }
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   }

@@ -16,7 +16,7 @@ const mockLogs = {
   invalidLogModel: {
     level: 'FATAL',
     description: 'Aplicattion down',
-    senderpplication: 'App_1', // Should be senderApplication
+    senderpplication: 'App_1',
     sendDate: '10/10/2019 15:00',
     environment: 'production'
   },
@@ -25,13 +25,13 @@ const mockLogs = {
     description: 'Aplicattion down',
     senderpplication: 'App_1',
     sendDate: '10/10/2019 15:00',
-    environment: 23 // Should be STRING
+    environment: 23
   },
   invalidLogDate: {
     level: 'FATAL',
     description: 'Aplicattion down',
     senderApplication: 'App_1',
-    sendDate: '25/25/2019 25:00', // Should be MM/dd/yyyy HH:mm
+    sendDate: '25/25/2019 25:00',
     environment: 'production'
   }
 }

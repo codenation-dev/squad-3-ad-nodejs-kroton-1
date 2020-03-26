@@ -18,7 +18,6 @@ module.exports = {
 
       return res.status(200).json(logs)
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -39,7 +38,6 @@ module.exports = {
 
       return res.status(200).json(logs)
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -60,7 +58,6 @@ module.exports = {
 
       return res.status(200).json(logs)
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -82,7 +79,6 @@ module.exports = {
 
       return res.status(201).json({ createdLog })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -91,8 +87,7 @@ module.exports = {
     try {
       const { params: { id } } = req
       const UserId = req.locals
-      console.log(id)
-      console.log(UserId)
+
       const isLogFound = await Log.findOne({
         where: {
           UserId,
@@ -110,7 +105,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Log restored successfully' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -158,7 +152,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -181,7 +174,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -206,7 +198,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   },
@@ -231,7 +222,6 @@ module.exports = {
 
       return res.status(200).json({ message: 'Deleted successfully, this action cannot be undone' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ message: 'Internal Server Error' })
     }
   }

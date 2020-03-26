@@ -7,7 +7,6 @@ module.exports = {
 
       return hash
     } catch (error) {
-      console.log(error)
       return error
     }
   },
