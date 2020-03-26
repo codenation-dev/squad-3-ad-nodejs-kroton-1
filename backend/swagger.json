@@ -793,45 +793,36 @@
         "responses": {
           "200": {
             "description": "Restore the log with the matching ID if it existed previously. Otherwise do nothing.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Log restored successfully"
-                    }
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Log restored successfully"
                 }
               }
             }
           },
           "204": {
             "description": "There is no log with informed ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "There is no log"
-                    }
-                  }
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There is no log"
                 }
               }
             }
           },
           "500": {
             "description": "Error on the server side",
-            "content": {
-              "application/json": null,
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": "string",
-                  "example": "Internal Server Error"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
                 }
               }
             }
@@ -1465,15 +1456,13 @@
         "responses": {
           "200": {
             "description": "Remove the log with the matching ID if it existed previously. Otherwise do nothing.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Deleted successfully, this action cannot be undone"
-                    }
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Deleted successfully, this action cannot be undone"
                   }
                 }
               }
@@ -1481,15 +1470,13 @@
           },
           "204": {
             "description": "There is no log with informed ID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "There is no log"
-                    }
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "There is no log"
                   }
                 }
               }
@@ -1497,12 +1484,12 @@
           },
           "500": {
             "description": "Error on the server side",
-            "content": {
-              "application/json": null,
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": "string",
+            "application/json": null,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
                   "example": "Internal Server Error"
                 }
               }
