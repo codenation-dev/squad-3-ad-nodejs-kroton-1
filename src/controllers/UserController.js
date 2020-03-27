@@ -45,7 +45,8 @@ module.exports = {
       }
 
       const existsEmail = await User.findOne({
-        where: { email }
+        where: { email },
+        paranoid: false
       })
 
       if (existsEmail) {
