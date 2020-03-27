@@ -1,6 +1,6 @@
 {
   "swagger": "2.0",
-  "host": "central-de-erros-squad3.herokuapp.com",
+  "host": "localhost:8080",
   "basePath": "/",
   "info": {
     "version": "1.0.2",
@@ -731,7 +731,7 @@
           },
           {
             "in": "path",
-            "name": "sender application",
+            "name": "senderApplication",
             "schema": {
               "type": "string",
               "required": true,
@@ -807,7 +807,7 @@
           },
           {
             "in": "path",
-            "name": "Environment",
+            "name": "environment",
             "schema": {
               "type": "string",
               "required": true,
@@ -883,7 +883,7 @@
           },
           {
             "in": "path",
-            "name": "Level",
+            "name": "level",
             "schema": {
               "type": "string",
               "required": true,
@@ -1077,7 +1077,7 @@
           },
           {
             "in": "path",
-            "name": "Log id",
+            "name": "id",
             "schema": {
               "type": "string",
               "required": true,
@@ -1213,7 +1213,7 @@
           },
           {
             "in": "path",
-            "name": "Log id",
+            "name": "id",
             "schema": {
               "type": "string",
               "required": true,
@@ -1369,7 +1369,7 @@
           },
           {
             "in": "path",
-            "name": "Log id",
+            "name": "id",
             "schema": {
               "type": "string",
               "required": true,
