@@ -2,19 +2,29 @@
 
 # Central de Erros
 
-## Download
+## Ambiente de produção
+
+### Visualizar a documentação e consumir API 
+
+A API está disponível na plataforma Heroku, para utilizar basta acessar:
+
+[API DOCS - Swagger](https://central-de-erros-squad3.herokuapp.com/)
+
+## Ambiente de desenvolvimento
+
+### Download
 
 ```
 git clone https://github.com/codenation-dev/squad-3-ad-nodejs-kroton-1.git
 ```
 
-## Instalação de dependencias
+### Instalação de dependencias
 
 ```
 npm i
 ```
 
-## Configure a variável de ambiente no linux
+### Configure a variável de ambiente no linux
 
 Essa variável irá permitir que a biblioteca dotenv encontre o arquivo .env presente na raiz do projeto. Esse arquivo contém as variáveis de ambiente necessárias para rodar todo o projeto em ambiente de desenvolvimento.
 
@@ -22,40 +32,42 @@ Essa variável irá permitir que a biblioteca dotenv encontre o arquivo .env pre
 export NODE_ENV=development
 ```
 
-## Inicia o docker localmente
+### Inicia o docker localmente
 
 ```
 npm run docker
 ```
 
-## Rodar aplicação localmente
+### Rodar aplicação localmente
 
 ```
 npm start
 ```
 
-## Visualizar a documentação da API
+### Visualizar a documentação da API
 
 Com o servidor local rodando basta acessar:
 
 [API DOCS - Swagger](http://localhost:8080/api-docs)
 
-## Considerações
+## Projeto final 
+
+### Considerações
 
 Este é o Projeto Final do programa de aceleração de carreiras AceleraDev, promovido pela CodeNation com foco na tecnologia Node.js e apoiado pela empresa Kroton Educacional.
 
-## Equipe
+### Equipe
 
 - Guilherme Cesar Da Silva
 - Henrique Detoni
 - Juiliano Freire Ribeiro
 - Luane Caroline Aquino Cavalcanti
 
-## Objetivo
+### Objetivo
 
 Em projetos modernos é cada vez mais comum o uso de arquiteturas baseadas em serviços ou microsserviços. Nestes ambientes complexos, erros podem surgir em diferentes camadas da aplicação (backend, frontend, mobile, desktop) e mesmo em serviços distintos. Desta forma, é muito importante que os desenvolvedores possam centralizar todos os registros de erros em um local, de onde podem monitorar e tomar decisões mais acertadas. Neste projeto implementamos um sistema para centralizar registros de erros de aplicações.
 
-## Tecnologias utilizadas
+### Tecnologias utilizadas
 
 - Node.js: v12.13.1
 
