@@ -2,6 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const routes = require('./routes')
+const cors = require('cors')
+
+app.use(cors())
 
 app.use(bodyParser.json())
 

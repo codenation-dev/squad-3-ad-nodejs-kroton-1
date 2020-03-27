@@ -1,5 +1,5 @@
 const { sequelize } = require('../models')
 
 sequelize
-  .sync({ alter: true })
+  .sync({ force: true })
   .then(() => console.log('Database synced'))
