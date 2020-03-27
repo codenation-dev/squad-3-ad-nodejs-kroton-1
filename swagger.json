@@ -3,7 +3,7 @@
   "host": "localhost:8080",
   "basePath": "/",
   "info": {
-    "version": "1.0.0",
+    "version": "1.0.2",
     "title": "Central de Erros API",
     "description": "Store and retrieve application logs from other applications",
     "license": {
@@ -536,7 +536,7 @@
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Ivalid data"
+                  "example": "Invalid data"
                 }
               }
             }
@@ -606,9 +606,11 @@
           {
             "in": "header",
             "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
             }
           }
         ],
@@ -625,7 +627,7 @@
               "$ref": "#/error_500"
             }
           },
-          "200_": {
+          "_200": {
             "description": "Returns the message stating that the user no longer exists",
             "schema": {
               "$ref": "#/delete_200_"
@@ -641,6 +643,8 @@
             "bearerAuth": []
           }
         ],
+        "summary": "Delete user forever",
+        "description": "Remove user account and all the logs associated with it from the database. This action cannot be undone. The user id will be provided by the token.",
         "produces": [
           "application/json"
         ],
@@ -656,8 +660,6 @@
             }
           }
         ],
-        "summary": "Delete user forever",
-        "description": "Remove user account and all the logs associated with it from the database. This action cannot be undone. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
@@ -707,104 +709,57 @@
         }
       }
     },
-    "/logs/restore/all": {
-      "post": {
+    "/logs/sender/{senderApplication}": {
+      "get": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "summary": "Restore all logs",
-        "description": "Restore all logs created by the user",
+        "summary": "Get logs by application",
+        "description": "Get all the logs for the application passed in the url parameter",
         "parameters": [
           {
             "in": "header",
             "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
               "type": "string",
-              "required": true
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Returns a succesfull message when all logs of an user are restored",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "All logs restored successfully"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Returns a message stating that an error has occurred on the server",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "200_": {
-            "description": "Returns a message stating that there are no logs to restore for this user",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "There are no logs"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/logs/restore/id/{id}": {
-      "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Restore a log",
-        "description": "Restore a log by an informed ID",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string",
-              "required": true
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
             }
           },
           {
             "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": "string"
+            "name": "senderApplication",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "Server load monitor"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Restore the log with the matching ID if it existed previously. Otherwise do nothing.",
+            "description": "OK",
             "schema": {
               "type": "object",
               "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Log restored successfully"
+                "total": {
+                  "type": "number",
+                  "example": 1
+                },
+                "Logs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Log"
+                  }
                 }
               }
             }
           },
           "204": {
-            "description": "There is no log with informed ID",
+            "description": "There is no logs for the informed application",
             "schema": {
               "type": "object",
               "properties": {
@@ -822,79 +777,7 @@
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Internal server error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/logs/sender/{senderApplication}": {
-      "get": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Get logs by application",
-        "description": "Get all the logs for the application passed in the url parameter",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "schema": {
-              "type": "string",
-              "required": true
-            }
-          },
-          {
-            "in": "path",
-            "name": "senderApplication",
-            "type": "string",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/Log"
-                  }
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "There is no logs for the informed application",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "There is no log"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error on the server side",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": "string",
-                    "example": "Internal Server Error"
-                  }
+                  "example": "Internal Server Error"
                 }
               }
             }
@@ -915,16 +798,21 @@
           {
             "in": "header",
             "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
             }
           },
           {
             "in": "path",
             "name": "environment",
-            "type": "string",
-            "required": true
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "homologation"
+            }
           }
         ],
         "produces": [
@@ -952,7 +840,7 @@
               }
             }
           },
-          "200_": {
+          "_200": {
             "description": "Returns a message stating that there are no logs to show for this user",
             "schema": {
               "type": "object",
@@ -986,9 +874,11 @@
           {
             "in": "header",
             "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
             }
           },
           {
@@ -996,7 +886,8 @@
             "name": "level",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "WARN"
             }
           }
         ],
@@ -1013,7 +904,7 @@
               "$ref": "#/error_500"
             }
           },
-          "200_": {
+          "_200": {
             "description": "Returns the message stating that there are no logs",
             "schema": {
               "$ref": "#/getByLevel_200_"
@@ -1141,7 +1032,7 @@
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Ivalid data"
+                  "example": "Invalid data"
                 }
               }
             }
@@ -1157,6 +1048,136 @@
                 "message": {
                   "type": "string",
                   "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs/restore/id/{id}": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Restore a log",
+        "description": "Restore a log by an informed ID",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Restore the log with the matching ID if it existed previously. Otherwise do nothing.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Log restored successfully"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "There is no log with informed ID",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There is no log"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on the server side",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal server error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logs/restore/all": {
+      "post": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Restore all logs",
+        "description": "Restore all logs created by the user",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a succesfull message when all logs of an user are restored",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "All logs restored successfully"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Returns a message stating that an error has occurred on the server",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "_200": {
+            "description": "Returns a message stating that there are no logs to restore for this user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There are no logs"
                 }
               }
             }
@@ -1183,9 +1204,11 @@
           {
             "in": "header",
             "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
             }
           },
           {
@@ -1193,7 +1216,8 @@
             "name": "id",
             "schema": {
               "type": "string",
-              "required": true
+              "required": true,
+              "example": "1"
             }
           }
         ],
@@ -1210,7 +1234,7 @@
               "$ref": "#/error_500"
             }
           },
-          "200_": {
+          "_200": {
             "description": "Returns the message stating that there is no log",
             "schema": {
               "$ref": "#/deleteById_200"
@@ -1229,6 +1253,8 @@
         "produces": [
           "application/json"
         ],
+        "summary": "Soft Delete for all logs from user.",
+        "description": "Delete al the logs from a user. The user id will be provided by the token.",
         "parameters": [
           {
             "in": "header",
@@ -1241,8 +1267,6 @@
             }
           }
         ],
-        "summary": "Soft Delete for all logs from user.",
-        "description": "Delete al the logs from a user. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
@@ -1322,6 +1346,79 @@
         }
       }
     },
+    "/logs/hard/{id}": {
+      "delete": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Permanently deletes log",
+        "description": "Delete the log. The log id will be provided by the token.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You need pass the Authorization header using the Bearer schema.",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string",
+              "required": true,
+              "example": "1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remove the log with the matching ID if it existed previously. Otherwise do nothing.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Deleted successfully, this action cannot be undone"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "There is no log with informed ID",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "There is no log"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error on the server side",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/logs/all/hard": {
       "delete": {
         "security": [
@@ -1329,6 +1426,8 @@
             "bearerAuth": []
           }
         ],
+        "summary": "Hard Delete for all logs from user",
+        "description": "Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.",
         "produces": [
           "application/json"
         ],
@@ -1344,8 +1443,6 @@
             }
           }
         ],
-        "summary": "Hard Delete for all logs from user.",
-        "description": "Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
@@ -1424,79 +1521,6 @@
           }
         }
       }
-    },
-    "logs/hard/{id}": {
-      "delete": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "header",
-            "name": "Authorization",
-            "description": "You need pass the Authorization header using the Bearer schema.",
-            "schema": {
-              "type": "string",
-              "required": true,
-              "example": "Bearer wgioiERBtXR6CXppvSyKV0MhFu28TKgfw94JvNEuDHA"
-            }
-          },
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Remove the log with the matching ID if it existed previously. Otherwise do nothing.",
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "Deleted successfully, this action cannot be undone"
-                  }
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "There is no log with informed ID",
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "example": "There is no log"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Error on the server side",
-            "application/json": null,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Internal Server Error"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "create_200": {
@@ -1548,7 +1572,7 @@
     "properties": {
       "message": {
         "type": "string",
-        "example": "Deleted succesfully"
+        "example": "Deleted successfully"
       }
     }
   },
