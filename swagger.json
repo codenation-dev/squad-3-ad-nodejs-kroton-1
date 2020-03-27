@@ -643,6 +643,8 @@
             "bearerAuth": []
           }
         ],
+        "summary": "Delete user forever",
+        "description": "Remove user account and all the logs associated with it from the database. This action cannot be undone. The user id will be provided by the token.",
         "produces": [
           "application/json"
         ],
@@ -658,8 +660,6 @@
             }
           }
         ],
-        "summary": "Delete user forever",
-        "description": "Remove user account and all the logs associated with it from the database. This action cannot be undone. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
@@ -1253,6 +1253,8 @@
         "produces": [
           "application/json"
         ],
+        "summary": "Soft Delete for all logs from user.",
+        "description": "Delete al the logs from a user. The user id will be provided by the token.",
         "parameters": [
           {
             "in": "header",
@@ -1265,8 +1267,6 @@
             }
           }
         ],
-        "summary": "Soft Delete for all logs from user.",
-        "description": "Delete al the logs from a user. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
@@ -1346,13 +1346,15 @@
         }
       }
     },
-    "logs/hard/{id}": {
+    "/logs/hard/{id}": {
       "delete": {
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "summary": "Permanently deletes log",
+        "description": "Delete the log. The log id will be provided by the token.",
         "produces": [
           "application/json"
         ],
@@ -1424,6 +1426,8 @@
             "bearerAuth": []
           }
         ],
+        "summary": "Hard Delete for all logs from user",
+        "description": "Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.",
         "produces": [
           "application/json"
         ],
@@ -1439,8 +1443,6 @@
             }
           }
         ],
-        "summary": "Hard Delete for all logs from user.",
-        "description": "Delete al the logs from a user forever. This action cannot be undone. The user id will be provided by the token.",
         "responses": {
           "200": {
             "description": "Returns the body with a message of deletation",
