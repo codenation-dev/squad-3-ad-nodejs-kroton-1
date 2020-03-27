@@ -9,6 +9,7 @@ const port = process.env.PORT
 
 router.get('/', (req, res) => {
   res.status(200).json({
+    message: 'Access the documentation',
     docs: `http://localhost:${port}/api-docs`
   })
 })
