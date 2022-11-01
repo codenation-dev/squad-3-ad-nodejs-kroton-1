@@ -58,7 +58,7 @@ Este é o Projeto Final do programa de aceleração de carreiras AceleraDev, pro
 
 ### Equipe
 
-- Guilherme Cesar da Silva
+- Guilherme Cesar dos Santos Silva
 - Henrique Detoni
 - Juiliano Freire Ribeiro
 - Luane Caroline Aquino Cavalcanti
